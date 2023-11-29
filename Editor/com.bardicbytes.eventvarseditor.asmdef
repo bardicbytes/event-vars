@@ -1,0 +1,16 @@
+{
+    "name": "com.bardicbytes.eventvarseditor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:8a04bf05b008e1d41a3afb6bd99d9363"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
