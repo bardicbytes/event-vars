@@ -1,10 +1,18 @@
 
 # Change Log
 All notable changes to this project will be documented in this file.
+
+## 2024-02-10
+- Editor improvements for EventVars and EventVarListeners
+- Code Cleanup
+- Demo added to Samples
+- Reduced number of files
+- Pruned inheritence tree
+- Added some documentation
  
-The format is based on [Keep a Changelog](http://keepachangelog.com/)
-and this project adheres to [Semantic Versioning](http://semver.org/).
- 
+### Added
+Initial Commit
+
 ## [Unreleased] - 2023-11-29
  
 ### Added

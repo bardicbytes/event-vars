@@ -1,9 +1,10 @@
 ﻿//alex@bardicbytes.com
-//using BardicBytes.BardicFramework.Utilities;
+
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
+
 namespace BardicBytes.EventVars
 {
     [System.Serializable]
@@ -55,7 +56,7 @@ namespace BardicBytes.EventVars
 
         public void RuntimeInitialize(EventVarInstancer owner)
         {
-            actorInstance = Src.Clone<EventVar>(owner);
+            actorInstance = Src.GetCreateActorInstance<EventVar>(owner);
             ActorInstance.SetInitialValue(this);
         }
 

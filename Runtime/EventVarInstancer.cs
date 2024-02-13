@@ -1,7 +1,7 @@
 //alex@bardicbytes.com
+
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace BardicBytes.EventVars
 {
@@ -14,19 +14,17 @@ namespace BardicBytes.EventVars
         [SerializeReference]
         private EventVarInstanceData[] eventVarInstances;
 
+        private Dictionary<EventVar, int> evInstanceLookup = default;
+
+        private bool isInitialized = false;
+
 #if UNITY_EDITOR
 
         [HideInInspector]
         [SerializeField]
         private int[] evHashCache;
-#endif
-        private Dictionary<EventVar, int> evInstanceLookup = default;
-
-        private bool isInitialized = false;
-
         protected void OnValidate()
         {
-#if UNITY_EDITOR
 
             bool refreshEvCache = false;
 
@@ -108,10 +106,8 @@ namespace BardicBytes.EventVars
                 }
                 return c;
             }
-#endif
         }
 
-#if UNITY_EDITOR
         [ContextMenu("RefreshEditorNames()")]
         private void RefreshEditorNames()
         {

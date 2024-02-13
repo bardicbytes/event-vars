@@ -1,15 +1,14 @@
 ﻿//alex@bardicbytes.com
-//why? https://www.youtube.com/watch?v=raQ3iHhE_Kk
-#if UNITY_EDITOR
-#endif
 
 namespace BardicBytes.EventVars
 {
     public interface IMinMax<T>
     {
-        T MinValue { get; set; }
-        T MaxValue { get; set; }
+        public T MinValue { get;}
+        public T MaxValue { get; }
 
         T MinMaxClamp(T value);
+
+        public void Raise(T data);
     }
 }
