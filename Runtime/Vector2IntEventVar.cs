@@ -5,9 +5,18 @@ using UnityEngine;
 namespace BardicBytes.EventVars
 {
     [CreateAssetMenu(menuName = "BardicBytes/EventVars/Vector2Int")]
-    public class Vector2IntEventVar : MinMaxEventVar<Vector2Int>, IMinMax<Vector2Int>
+    public class Vector2IntEventVar : EventVar<int>, IMinMax<Vector2Int>
     {
-        public override Vector2Int MinMaxClamp(Vector2Int val)
+        [SerializeField]
+        protected bool hasMin = false;
+        [field: SerializeField]
+        public Vector2Int MinValue { get; protected set; } = Vector2Int.zero;
+        [SerializeField]
+        protected bool hasMax = false;
+        [field: SerializeField]
+        public Vector2Int MaxValue { get; protected set; } = Vector2Int.one;
+
+        public Vector2Int MinMaxClamp(Vector2Int val)
         {
             if (hasMax && hasMin)
                 return new Vector2Int(Mathf.Clamp(val.x, MinValue.x, MaxValue.y), Mathf.Clamp(val.y, MinValue.y, MaxValue.y));
@@ -18,9 +27,14 @@ namespace BardicBytes.EventVars
             else return val;
         }
 
-        public override Vector2Int To(EventVarInstanceData bc) => bc.Vector2IntValue;
+        public void Raise(Vector2Int data)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override int To(EventVarInstanceData bc) => bc.IntValue;
 #if UNITY_EDITOR
-        protected override void SetInstanceConfigValue(Vector2Int val, EventVarInstanceData config) => config.Vector2IntValue = val;
+        protected override void SetInstanceConfigValue(int val, EventVarInstanceData config) => config.IntValue = val;
 #endif
     }
 }

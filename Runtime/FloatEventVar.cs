@@ -30,7 +30,7 @@ namespace BardicBytes.EventVars
 
         public override void Raise(float data) => base.Raise(MinMaxClamp(data));
 
-        public override float To(EventVars.EventVarInstanceData bc) => bc.FloatValue;
+        public override float To(EventVarInstanceData bc) => bc.FloatValue;
 #if UNITY_EDITOR
         protected override void SetInstanceConfigValue(float val, EventVars.EventVarInstanceData config) => config.FloatValue = val;
 #endif
