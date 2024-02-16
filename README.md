@@ -6,30 +6,38 @@ scriptable object based event architecture
 # EventVars for Unity
 
 ## Overview
-EventVars is a comprehensive system designed for Unity that leverages ScriptableObjects to create a robust and flexible event management system. Created by Bardic Bytes LLC, it streamlines the communication between different parts of your game without the need for tightly coupled references, facilitating a more modular and maintainable codebase.
+*EventVars* enables easy-to-use event-driven architecture in applications made with Unity. 
+
+The system leverages Unity's ScriptableObjects and the AssetDatabase to streamline communication between different parts of your game without the need for tightly coupled references. Added benefits include a more modular and maintainable codebase.
 
 ## Features
-- **Unique Identifiers**: Utilizes GUIDs as unique identifiers for each event variable, ensuring reliable reference across your projects.
-- **Unity Editor Support**: Includes custom editor utilities to streamline the management and debugging of event variables.
-- **Dynamic Event Listening**: Facilitates the dynamic addition and removal of event listeners at runtime, enhancing flexibility.
-- **Extensibility**: Provides a framework for creating typed event variables to accommodate various data types and structures.
-- **Instance Management**: Through the `EventVarInstancer` component, manage instances of event variables at runtime, ensuring correct event handling and state management across scenes and prefabs.
+- **Extensibility**: Provides a framework for creating new EventVars for any type of object.
+- **GameObject-EventVar Instancing**: Create GameObject-associated clones of EventVars, like for health or speed, 
+- **Pre-made Types**: Typed EventVars have been premade for most simple types and common types used in Unity. The EventVarListener Component makes it easy to start using EventVars for many common tasks like UI Button events.
 
 ## Requirements
-- Unity 2022.3.0b5 or newer is required to ensure full compatibility with the package features.
+- Unity 2022.3 or newer is required to ensure full compatibility with the package features.
 
 ## Installation
-1. Clone the EventVars repository into your Unity project's `Assets` folder:
+
+The EventVars system can be easily integrated into your Unity project using the Unity Package Manager (UPM) with a Git URL. Follow these steps to add EventVars to your project:
+
+### Using Unity Package Manager
+
+1. **Open your Unity project** and navigate to `Window` > `Package Manager` to open the Package Manager window.
+
+2. Click on the **"+" button** in the top left corner of the Package Manager window and select **"Add package from git URL..."**.
+
+3. **Enter the Git URL** for the EventVars repository and click "Add":
 
 ```
-git clone https://github.com/bardicbytes/event-vars.git
+https://github.com/bardicbytes/event-vars.git
 ```
-
-2. The EventVars system is now ready to be used within Unity. Navigate to the cloned directory to get started.
+Unity will now download and import the EventVars package into your project.
 
 ## Usage
-1. **Creating Event Variables**: Use `Assets/Create/Bardic Bytes/EventVar without Data` to create new event variables.
-2. **Listening and Raising Events**: Add the `EventVarListener` script to GameObjects to listen for events, and use the `Raise` method on event variables to trigger actions.
+1. **Creating EventVars**: From the menu `Assets/Create/Bardic Bytes/EventVars/...` you can create new EventVar assets.
+2. **Listening and Raising Events**: Add the `EventVarListener` script or a subtypes to GameObjects to listen for events, and use the `Raise` method on event variables to trigger actions.
 3. **Managing Instances**: Utilize `EventVarInstancer` to manage runtime instances of your event variables, ensuring that state and listeners are correctly managed across gameplay.
 
 ## Documentation

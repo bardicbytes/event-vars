@@ -11,16 +11,16 @@ namespace BardicBytes.EventVars
         public virtual void Validate() => Debug.Assert(instancer != null);
     }
 
-    public abstract class EventVarField<InT, OutT, EvT> : EventVarField where EvT : EventVar<InT, OutT, EvT>
+    public abstract class EventVarField<InT, OutT, EventVarType> : EventVarField where EventVarType : EventVar<InT, OutT, EventVarType>
     {
-        public static implicit operator OutT(EventVarField<InT, OutT, EvT> f) => f.Eval();
+        public static implicit operator OutT(EventVarField<InT, OutT, EventVarType> f) => f.Eval();
 
-        public Type EventVarType => typeof(EvT);
-        public OutT Value => Eval();
-        public EvT Source => srcEV;
 
         [SerializeField] private OutT fallbackValue = default;
-        [SerializeField] private EvT srcEV = default;
+        [SerializeField] private EventVarType srcEV = default;
+
+        public OutT Value => Eval();
+        public EventVarType Source => srcEV;
 
         private OutT Eval()
         {
@@ -37,7 +37,7 @@ namespace BardicBytes.EventVars
                     Debug.LogWarning("failed to find instance for " + srcEV.name + " in " + instancer.name);
                 }
                 if (ai == null) return srcEV != null ? srcEV.Value : fallbackValue;
-                return ai.Eval<InT, OutT>();
+                return ai.Evaluate();
             }
 
             return srcEV.Value;

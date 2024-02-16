@@ -1,9 +1,10 @@
 ﻿//alex@bardicbytes.com
+
 using UnityEngine;
 
 namespace BardicBytes.EventVars
 {
-    [CreateAssetMenu(menuName = Prefixes.EV + "Vector3")]
+    [CreateAssetMenu(menuName = "BardicBytes/EventVars/Vector3")]
     public class Vector3EventVar : MinMaxEventVar<Vector3>, IMinMax<Vector3>
     {
 

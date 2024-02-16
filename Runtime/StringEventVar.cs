@@ -1,9 +1,10 @@
 ﻿//alex@bardicbytes.com
+
 using UnityEngine;
 
 namespace BardicBytes.EventVars
 {
-    [CreateAssetMenu(menuName = Prefixes.EV + "String")]
+    [CreateAssetMenu(menuName = "BardicBytes/EventVars/String")]
     public class StringEventVar : EventVar<string>
     {
         public override string To(EventVarInstanceData bc) => bc.StringValue;

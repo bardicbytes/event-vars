@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace BardicBytes.EventVars
 {
+    [DisallowMultipleComponent]
     public class EventVarInstancer : MonoBehaviour
     {
         [SerializeField]
@@ -25,7 +26,6 @@ namespace BardicBytes.EventVars
         private int[] evHashCache;
         protected void OnValidate()
         {
-
             bool refreshEvCache = false;
 
             if (eventVars != null &&
