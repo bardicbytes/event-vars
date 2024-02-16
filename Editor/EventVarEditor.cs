@@ -17,6 +17,7 @@ namespace BardicBytes.EventVarsEditor
 
             foldout = EditorGUILayout.Foldout(foldout, "Default Inspector", true);
             if (foldout) DrawDefaultInspector();
+            serializedObject.ApplyModifiedProperties();
         }
     }
 }

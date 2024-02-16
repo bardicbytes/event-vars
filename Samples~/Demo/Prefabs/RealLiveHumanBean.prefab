@@ -5057,6 +5057,7 @@ GameObject:
   - component: {fileID: 474543093938383301}
   - component: {fileID: 3901686249712502846}
   - component: {fileID: 8272144595428758003}
+  - component: {fileID: -6048295827816709307}
   m_Layer: 2
   m_Name: RealLiveHumanBean
   m_TagString: Untagged
@@ -5198,3 +5199,38 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 80
   m_CollisionDetection: 0
+--- !u!114 &-6048295827816709307
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8892947139774482371}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c27beb84d372b1f429637b8dffdef873, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eventVars:
+  - {fileID: 11400000, guid: 9878919db57f7034d8059ee8c4d8b946, type: 2}
+  eventVarInstances:
+  - rid: 2870061054355570688
+  evHashCache: 073e5dd8
+  references:
+    version: 2
+    RefIds:
+    - rid: 2870061054355570688
+      type: {class: EventVarInstanceData, ns: BardicBytes.EventVars, asm: com.bardicbytes.eventvars}
+      data:
+        editorName: EV-Float-Speed
+        actorInstance: {fileID: 0}
+        <Src>k__BackingField: {fileID: 11400000, guid: 9878919db57f7034d8059ee8c4d8b946,
+          type: 2}
+        <StringValue>k__BackingField: 
+        <IntValue>k__BackingField: 0
+        <FloatValue>k__BackingField: 0
+        <BoolValue>k__BackingField: 0
+        <Vector3Value>k__BackingField: {x: 0, y: 0, z: 0}
+        <Vector2IntValue>k__BackingField: {x: 0, y: 0}
+        <UnityObjectValue>k__BackingField: {fileID: 0}
+        DEBUG_selstring: '?'
