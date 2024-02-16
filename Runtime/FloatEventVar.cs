@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace BardicBytes.EventVars
 {
-    [CreateAssetMenu(menuName = Prefixes.EV + "Float")]
+    [CreateAssetMenu(menuName = "BardicBytes/EventVars/Float")]
     public class FloatEventVar : EventVar<float>, IMinMax<float>
     {
         [Header("MinMax")]

@@ -1,9 +1,10 @@
 ﻿//alex@bardicbytes.com
+
 using UnityEngine;
 
 namespace BardicBytes.EventVars
 {
-    [CreateAssetMenu(menuName = Prefixes.EV + "Vector2Int")]
+    [CreateAssetMenu(menuName = "BardicBytes/EventVars/Vector2Int")]
     public class Vector2IntEventVar : MinMaxEventVar<Vector2Int>, IMinMax<Vector2Int>
     {
         public override Vector2Int MinMaxClamp(Vector2Int val)

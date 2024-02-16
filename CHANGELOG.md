@@ -2,18 +2,27 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## 2024-02-10
-- Editor improvements for EventVars and EventVarListeners
+## [0.2.1] - 2024-02-15
+### Bug Fixes
+- fixed issue with instancer supporting functionality
+
+### Added
+- documentation
+- code comments
+
+## [0.2.0] - 2024-02-10
+
+### Improvements
 - Code Cleanup
-- Demo added to Samples
 - Reduced number of files
 - Pruned inheritence tree
-- Added some documentation
- 
+
 ### Added
-Initial Commit
+- Editor improvements for EventVars and EventVarListeners
+- Initial documentation
+- Demo in Samples~ folder
 
 ## [Unreleased] - 2023-11-29
  
 ### Added
-Initial Commit
+- Initial Commit

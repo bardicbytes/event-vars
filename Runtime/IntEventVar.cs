@@ -5,7 +5,7 @@ using UnityEngine;
 namespace BardicBytes.EventVars
 {
 
-    [CreateAssetMenu(menuName = Prefixes.EV + "Int")]
+    [CreateAssetMenu(menuName = "BardicBytes/EventVars/Int")]
     public class IntEventVar : MinMaxEventVar<int>, IMinMax<int>
     {
         public override int MinMaxClamp(int val)

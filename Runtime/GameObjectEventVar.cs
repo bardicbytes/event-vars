@@ -4,6 +4,6 @@ using UnityEngine;
 
 namespace BardicBytes.EventVars
 {
-    [CreateAssetMenu(menuName = Prefixes.EV + "GameObject")]
+    [CreateAssetMenu(menuName = "BardicBytes/EventVars/GameObject")]
     public class GameObjectEventVar : GenericUnityObjectEventVar<GameObject>{}
 }

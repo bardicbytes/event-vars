@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace BardicBytes.EventVars
 {
-    [CreateAssetMenu(menuName = Prefixes.EV + "Bool")]
+    [CreateAssetMenu(menuName = "BardicBytes/EventVars/Bool")]
 
     public class BoolEventVar : EventVar<bool> 
     {
