@@ -1,9 +1,9 @@
 //alex@bardicbytes.com
-using BardicBytes.EventVars;
+
 using UnityEditor;
 using UnityEngine;
 
-namespace BardicBytes.BardicFrameworkEditor
+namespace BardicBytes.EventVars.Editor
 {
     [CustomPropertyDrawer(typeof(EventVarInstanceData), true)]
     public class EVInstConfigDrawer : PropertyDrawer

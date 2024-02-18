@@ -50,8 +50,6 @@ namespace BardicBytes.EventVars
         protected float lastRaiseTime;
         protected bool isInitialized = false;
 
-
-
         /*
          * protected / private methods
          */
@@ -100,6 +98,10 @@ namespace BardicBytes.EventVars
                 Debug.LogError(e);
             }
         }
+        public virtual void SetStoredValue(object newStoredValue)
+        {
+            this.UntypedStoredValue = newStoredValue;
+        }
         public virtual void SetInstanceConfigValue(SerializedProperty prop, EventVarInstanceData config)
         {
             throw new NotImplementedException("There's no reason to instance an event var without without data." + this.name);
@@ -127,6 +129,7 @@ namespace BardicBytes.EventVars
         /*
          * public methods
          */
+
 
         /// <summary>
         /// Insantiates a clone of THIS.
@@ -191,7 +194,7 @@ namespace BardicBytes.EventVars
         {
             throw new NotImplementedException("There's no reason to instance an event var without without data." + this.name);
         }
-        public override string ToString() => name + "? " + UntypedStoredValue;
+        public override string ToString() => name + ". " + UntypedStoredValue;
     }
 
     /// <summary>
@@ -256,37 +259,49 @@ namespace BardicBytes.EventVars
 
         [field: SerializeField]
         public InputType InitialValue { get; protected set; }
-        public InputType StoredValue
-        {
-            get
-            {
-                var b = base.UntypedStoredValue;
-                InputType v = default;
-                if (b != null) v = (InputType)b;
-                return v;
-            }
-        }
+        public InputType TypedStoredValue { get; protected set; }
+
         public OutputType Value
         {
             get
             {
-                if(Debug.isDebugBuild) if (Debug.isDebugBuild) Debug.Assert(!RequireInstancing || IsActorInstance, name + " " + (IsActorInstance ? "Is ActorInst" : "Not ActorInst"));
-                return Evaluate(StoredValue);
+                if (Debug.isDebugBuild) Debug.Assert(!RequireInstancing || IsActorInstance, name + " " + (IsActorInstance ? "Is ActorInst" : "Not ActorInst"));
+                return Evaluate(TypedStoredValue);
             }
         }
+
+
         public override bool HasValue { get => true; }
         public override Type StoredValueType => typeof(InputType);
         public override Type OutputValueType => typeof(OutputType);
 
         public override int TotalListeners => base.TotalListeners + typedEvent.GetPersistentEventCount();
+        public override void SetStoredValue(object newStoredValue)
+        {
+            if(newStoredValue == null || newStoredValue == default)
+            {
+                TypedStoredValue = default;
+            }
+            else if(newStoredValue is InputType typedValue)
+            {
+                this.TypedStoredValue = typedValue;
+            }
+            else
+            {
+                throw new ArgumentException($"{name} {newStoredValue} {newStoredValue?.GetType()}");
+            }
+
+            base.SetStoredValue(newStoredValue);
+        }
+        protected abstract void SetInstanceConfigValue(InputType val, EventVarInstanceData config);
 
 #if UNITY_EDITOR
-        public InputType To(SerializedProperty prop) => To((prop.boxedValue as EventVarInstanceData));
+        public InputType GetValueFromProperty(SerializedProperty prop) => GetTypedValue(prop.boxedValue as EventVarInstanceData);
 
         public override void SetInstanceConfigValue(SerializedProperty prop, EventVarInstanceData config)
         {
             if (Debug.isDebugBuild) Debug.Assert(config != null);
-            var val = To(prop);
+            var val = GetValueFromProperty(prop);
             SetInstanceConfigValue(val, config);
         }
 
@@ -296,24 +311,25 @@ namespace BardicBytes.EventVars
             EditorGUI.LabelField(position, InitialValue.ToString());
             return default;
         }
-#endif
-        protected abstract void SetInstanceConfigValue(InputType val, EventVarInstanceData config);
+
 
         protected override void OnValidate()
         {
-            if (StoredValue == null
-                || (StoredValue != null
-                && !StoredValue.Equals(InitialValue)))
+            if (TypedStoredValue == null
+                || (TypedStoredValue != null
+                && !TypedStoredValue.Equals(InitialValue)))
             {
-                UntypedStoredValue = InitialValue;
+                SetStoredValue(InitialValue);
             }
 
             base.OnValidate();
         }
+#endif
 
         protected override void OnEnable()
         {
-            UntypedStoredValue = InitialValue;
+            SetStoredValue(InitialValue);
+
             isInitialized = false;
 
             if (typedEvent != null) typedEvent.RemoveAllListeners();
@@ -336,7 +352,7 @@ namespace BardicBytes.EventVars
         public override string ToString() => GetValueString();
 
         // seprate for extensibility purposes
-        public virtual string GetValueString() => StoredValue == null ? "null value" : StoredValue.ToString();
+        public virtual string GetValueString() => TypedStoredValue == null ? "null value" : TypedStoredValue.ToString();
 
         /// <summary>
         /// Clones the source EventVar asset, and puts it in a config
@@ -352,7 +368,7 @@ namespace BardicBytes.EventVars
             
             if (requireData
                 && resetValueOnDatalessRaise
-                && StoredValue.Equals(InitialValue)) return;
+                && TypedStoredValue.Equals(InitialValue)) return;
             
             if (resetValueOnDatalessRaise) ChangeCurrentValue(InitialValue);
             
@@ -367,7 +383,7 @@ namespace BardicBytes.EventVars
             Initialize();
             if (Debug.isDebugBuild) Debug.Assert(!RequireInstancing || IsActorInstance);
 
-            if (abortRaiseForIdenticalData && StoredValue.Equals(data)) return;
+            if (abortRaiseForIdenticalData && TypedStoredValue.Equals(data)) return;
 
             ChangeCurrentValue(data);
 
@@ -386,8 +402,8 @@ namespace BardicBytes.EventVars
 
         private void ChangeCurrentValue(InputType data)
         {
-            if (Debug.isDebugBuild && debugLogValueChange && !data.Equals(StoredValue)) Debug.Log($"{name} value changes. {StoredValue}={data}");
-            UntypedStoredValue = data;
+            if (Debug.isDebugBuild && debugLogValueChange && !data.Equals(TypedStoredValue)) Debug.Log($"{name} value changes. {TypedStoredValue}={data}");
+            SetStoredValue(data);
         }
 
         public override void AddListener(UnityAction action) => throw new NotImplementedException("Typed EventVars must use typed events.");
@@ -422,31 +438,28 @@ namespace BardicBytes.EventVars
         {
             this.InitialValue = initialValue;
             if (isInitialized) ChangeCurrentValue(initialValue);
-            else UntypedStoredValue = initialValue;
+            else SetStoredValue(initialValue);
         }
-        public abstract InputType To(EventVarInstanceData bc);
 
-        public override void SetInitialValue(EventVarInstanceData bc)
-        {
-            InputType v = default;
-            v = To(bc);
-            SetInitialValue(v);
-        }
+        /// <summary>
+        /// Abtract method for extracting the value from the argument.
+        /// </summary>
+        /// <param name="data">The EventVarInsanceData</param>
+        /// <returns>The typed value stored in the EventVarInsanceData arg</returns>
+        public abstract InputType GetTypedValue(EventVarInstanceData data);
+
+        public override void SetInitialValue(EventVarInstanceData data) => SetInitialValue(GetTypedValue(data));
     }
 
     public abstract class GenericSystemObjectEventVar<T> : EventVar<T>
     {
-        public override T To(EventVarInstanceData bc) => (T)bc.SystemObjectValue;
-#if UNITY_EDITOR
+        public override T GetTypedValue(EventVarInstanceData bc) => (T)bc.SystemObjectValue;
         protected override void SetInstanceConfigValue(T val, EventVarInstanceData config) => config.SystemObjectValue = val;
-#endif
     }
 
     public abstract class GenericUnityObjectEventVar<T> : EventVar<T> where T : UnityEngine.Object
     {
-        public override T To(EventVarInstanceData bc) => (T)bc.UnityObjectValue;
-#if UNITY_EDITOR
+        public override T GetTypedValue(EventVarInstanceData bc) => (T)bc.UnityObjectValue;
         protected override void SetInstanceConfigValue(T val, EventVarInstanceData config) => config.UnityObjectValue = val;
-#endif
     }
 }

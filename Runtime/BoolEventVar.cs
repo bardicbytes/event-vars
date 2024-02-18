@@ -10,10 +10,8 @@ namespace BardicBytes.EventVars
     {
         public void Toggle() => Raise(!Value);
 
-        public override bool To(EventVars.EventVarInstanceData bc) => bc.BoolValue;
-#if UNITY_EDITOR
+        public override bool GetTypedValue(EventVars.EventVarInstanceData bc) => bc.BoolValue;
 
         protected override void SetInstanceConfigValue(bool val, EventVars.EventVarInstanceData config) => config.BoolValue = val;
-#endif
     }
 }

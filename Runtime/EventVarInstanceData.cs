@@ -1,6 +1,7 @@
 ﻿//alex@bardicbytes.com
 
 using UnityEngine;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -15,7 +16,7 @@ namespace BardicBytes.EventVars
         private string editorName = "unnamed";
 
         [SerializeField]
-        private EventVar actorInstance;
+        private EventVar eventVarClone;
 
         [field: SerializeField]
         public EventVar Src { get; protected set; }
@@ -29,17 +30,15 @@ namespace BardicBytes.EventVars
         [field: SerializeField] public System.Object SystemObjectValue { get; set; }
 
         private string selector = null;
-        [SerializeField]
-        private string DEBUG_selstring = "?";
 
         public EventVar ActorInstance
         {
             get
             {
                 Debug.Assert(Application.isPlaying, "runtime only!");
-                return actorInstance;
+                return eventVarClone;
             }
-            set => actorInstance = value;
+            set => eventVarClone = value;
         }
 
         public EventVarInstanceData()
@@ -56,7 +55,7 @@ namespace BardicBytes.EventVars
 
         public void RuntimeInitialize(EventVarInstancer owner)
         {
-            actorInstance = Src.GetCreateActorInstance<EventVar>(owner);
+            eventVarClone = Src.GetCreateActorInstance<EventVar>(owner);
             ActorInstance.SetInitialValue(this);
         }
 
@@ -131,7 +130,7 @@ namespace BardicBytes.EventVars
                 return false;
             }
             selector = Src.StoredValueType.FullName;
-            DEBUG_selstring = selector + "";
+
             bool didDraw = false;
             bool changed = false;
 

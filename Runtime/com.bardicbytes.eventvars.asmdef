@@ -1,3 +1,14 @@
 {
-	"name": "com.bardicbytes.eventvars"
+    "name": "com.bardicbytes.eventvars",
+    "rootNamespace": "BardicBytes.EventVars",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

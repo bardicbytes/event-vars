@@ -32,9 +32,7 @@ namespace BardicBytes.EventVars
             throw new System.NotImplementedException();
         }
 
-        public override int To(EventVarInstanceData bc) => bc.IntValue;
-#if UNITY_EDITOR
+        public override int GetTypedValue(EventVarInstanceData bc) => bc.IntValue;
         protected override void SetInstanceConfigValue(int val, EventVarInstanceData config) => config.IntValue = val;
-#endif
     }
 }

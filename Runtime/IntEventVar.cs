@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace BardicBytes.EventVars
 {
-
     [CreateAssetMenu(menuName = "BardicBytes/EventVars/Int")]
     public class IntEventVar : EventVar<int>, IMinMax<int>
     {
@@ -29,7 +28,7 @@ namespace BardicBytes.EventVars
             else return val;
         }
 
-        public override int To(EventVarInstanceData bc) => bc.IntValue;
+        public override int GetTypedValue(EventVarInstanceData bc) => bc.IntValue;
         protected override void SetInstanceConfigValue(int val, EventVars.EventVarInstanceData config) => config.IntValue = val;
 
         public void Increment() => Raise(base.Value + 1);

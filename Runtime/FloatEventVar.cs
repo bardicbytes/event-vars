@@ -10,10 +10,13 @@ namespace BardicBytes.EventVars
         [Header("MinMax")]
         [SerializeField]
         protected bool hasMin = false;
+
         [field: SerializeField]
         public float MinValue { get; protected set; } = 0;
+
         [SerializeField]
         protected bool hasMax = false;
+
         [field: SerializeField]
         public float MaxValue { get; protected set; } = 1;
 
@@ -30,9 +33,7 @@ namespace BardicBytes.EventVars
 
         public override void Raise(float data) => base.Raise(MinMaxClamp(data));
 
-        public override float To(EventVarInstanceData bc) => bc.FloatValue;
-#if UNITY_EDITOR
+        public override float GetTypedValue(EventVarInstanceData bc) => bc.FloatValue;
         protected override void SetInstanceConfigValue(float val, EventVars.EventVarInstanceData config) => config.FloatValue = val;
-#endif
     }
 }

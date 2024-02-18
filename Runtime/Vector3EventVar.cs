@@ -29,9 +29,7 @@ namespace BardicBytes.EventVars
             else return val;
         }
 
-        public override Vector3 To(EventVarInstanceData bc) => bc.Vector3Value;
-#if UNITY_EDITOR
+        public override Vector3 GetTypedValue(EventVarInstanceData bc) => bc.Vector3Value;
         protected override void SetInstanceConfigValue(Vector3 val, EventVarInstanceData config) => config.Vector3Value = val;
-#endif
     }
 }

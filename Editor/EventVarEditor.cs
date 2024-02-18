@@ -1,12 +1,11 @@
 //alex@bardicbytes.com
 
 using UnityEditor;
-using BardicBytes.EventVars;
 
-namespace BardicBytes.EventVarsEditor
+namespace BardicBytes.EventVars.Editor
 {
     [CustomEditor(typeof(EventVar), true), CanEditMultipleObjects]
-    public class EventVarEditor : Editor
+    public class EventVarEditor : UnityEditor.Editor
     {
         private bool foldout = false;
 
