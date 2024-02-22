@@ -31,7 +31,7 @@ namespace BardicBytes.EventVars
 
         private string selector = null;
 
-        public EventVar ActorInstance
+        public EventVar EventVarClone
         {
             get
             {
@@ -48,7 +48,7 @@ namespace BardicBytes.EventVars
 
         public EventVarInstanceData(EventVar src)
         {
-            ActorInstance = null;
+            EventVarClone = null;
             SetSrc(src);
             editorName = src.name;
         }
@@ -56,7 +56,7 @@ namespace BardicBytes.EventVars
         public void RuntimeInitialize(EventVarInstancer owner)
         {
             eventVarClone = Src.GetCreateActorInstance<EventVar>(owner);
-            ActorInstance.SetInitialValue(this);
+            EventVarClone.SetInitialValue(this);
         }
 
         private void SetSrc(EventVar evSrc)

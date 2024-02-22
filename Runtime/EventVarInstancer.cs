@@ -152,7 +152,7 @@ namespace BardicBytes.EventVars
             {
                 Initialize();
                 var index = evInstanceLookup[eventVarAssetRef];
-                ev = eventVarInstances[index].ActorInstance as EventVar;
+                ev = eventVarInstances[index].EventVarClone as EventVar;
             }
             else
             {

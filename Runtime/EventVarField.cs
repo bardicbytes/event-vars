@@ -1,7 +1,6 @@
 ﻿//alex@bardicbytes.com
 
 using UnityEngine;
-using System;
 
 namespace BardicBytes.EventVars
 {
@@ -14,7 +13,6 @@ namespace BardicBytes.EventVars
     public abstract class EventVarField<InT, OutT, EventVarType> : EventVarField where EventVarType : EventVar<InT, OutT, EventVarType>
     {
         public static implicit operator OutT(EventVarField<InT, OutT, EventVarType> f) => f.Eval();
-
 
         [SerializeField] private OutT fallbackValue = default;
         [SerializeField] private EventVarType srcEV = default;

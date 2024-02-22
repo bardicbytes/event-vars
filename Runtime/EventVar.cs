@@ -200,8 +200,10 @@ namespace BardicBytes.EventVars
     /// <summary>
     /// A convenience implementation for EventVars that evaluate to the same type
     /// </summary>
-    /// <typeparam name="T">The Type that the EventVar stores and shares when raised.</typeparam>
-    public abstract class EventVar<T> : EventVar<T, T> { }
+    /// <typeparam name="InputType">The Type that the EventVar stores and shares when raised.</typeparam>
+    public abstract class EventVar<InputType> : 
+        EventVar<InputType, InputType>, 
+        IEventVarInput<InputType> { }
 
     /// <summary>
     /// This generic EventVar is for when the Input type and Output type match.
@@ -209,7 +211,10 @@ namespace BardicBytes.EventVars
     /// </summary>
     /// <typeparam name="InputType">Input Type that must extend the Output Type</typeparam>
     /// <typeparam name="OutputType">The Output Type</typeparam>
-    public abstract class EventVar<InputType, OutputType> : EventVar<InputType, OutputType, EventVar<InputType, OutputType>> where InputType : OutputType
+    public abstract class EventVar<InputType, OutputType> : 
+        EventVar<InputType, OutputType, EventVar<InputType, OutputType>>, 
+        IEventVarInput<InputType> 
+        where InputType : OutputType
     {
         // This EventVar always Evaluates 
         public override OutputType Evaluate(InputType val) => val;
@@ -221,7 +226,10 @@ namespace BardicBytes.EventVars
     /// <typeparam name="InputType">The Type required when raising the EventVar.</typeparam>
     /// <typeparam name="OutputType">The Type shared when the EventVar is raised.</typeparam>
     /// <typeparam name="EventVarType">The Type that is implementing this generic EventVar class.</typeparam>
-    public abstract class EventVar<InputType, OutputType, EventVarType> : EventVar where EventVarType : EventVar<InputType, OutputType, EventVarType>
+    public abstract class EventVar<InputType, OutputType, EventVarType> : 
+        EventVar,
+        IEventVarInput<InputType>
+        where EventVarType : EventVar<InputType, OutputType, EventVarType>
     {
         public override string[] EditorProperties => new string[] { StringFormatting.GetBackingFieldName("InitialValue"),"typedEvent", "requireData", "resetValueOnDatalessRaise","invokeNewListeners", "abortRaiseForIdenticalData" };
 
@@ -270,7 +278,6 @@ namespace BardicBytes.EventVars
             }
         }
 
-
         public override bool HasValue { get => true; }
         public override Type StoredValueType => typeof(InputType);
         public override Type OutputValueType => typeof(OutputType);
@@ -305,13 +312,11 @@ namespace BardicBytes.EventVars
             SetInstanceConfigValue(val, config);
         }
 
-
         public virtual InputType PropField(Rect position, UnityEditor.SerializedProperty rawProp)
         {
             EditorGUI.LabelField(position, InitialValue.ToString());
             return default;
         }
-
 
         protected override void OnValidate()
         {
@@ -449,6 +454,8 @@ namespace BardicBytes.EventVars
         public abstract InputType GetTypedValue(EventVarInstanceData data);
 
         public override void SetInitialValue(EventVarInstanceData data) => SetInitialValue(GetTypedValue(data));
+
+        public SerializableEventVarData<InputType> GetSerializableData() => new SerializableEventVarData<InputType>(this);
     }
 
     public abstract class GenericSystemObjectEventVar<T> : EventVar<T>

@@ -8,18 +8,7 @@ namespace BardicBytes.EventVars
     [CreateAssetMenu(menuName = "BardicBytes/EventVar Collection")]
     public class EventVarCollection : ScriptableObject
     {
-        public struct SerializableData
-        {
-            public string guid;
-            public object value;
-
-            public SerializableData(EventVar ev)
-            {
-                this.guid = ev.GUID;
-                this.value = ev.UntypedStoredValue;
-            }
-        }
-
+        // Serialized / Inspector Fields
         [SerializeField]
         private List<EventVar> eventVars = default;
         [SerializeField]
@@ -35,10 +24,12 @@ namespace BardicBytes.EventVars
         private void OnValidate()
         {
             bool valid = eventVars.Count == guidHash.Count;
-            if (!valid) guidHash = new List<int>(eventVars.Count);
+            if (!valid) guidHash = new List<int>(new int[eventVars.Count]);
 
-            for (int i = default; i < eventVars.Count; i++)
+            for (int i = 0; i < eventVars.Count; i++)
             {
+                if(eventVars[i] == null) break;
+
                 int hash = eventVars[i].GUID.GetHashCode();
 
                 if (guidHash[i] == 0 || hash != guidHash[i])
@@ -48,24 +39,30 @@ namespace BardicBytes.EventVars
             }
         }
 
-        public void Import(SerializableData[] data)
+        public void Import(SerializableEventVarCollection data)
         {
-            if(Debug.isDebugBuild) Debug.Assert(data.Length == guidHash.Count);
+            ImportList(data.floatEventVars);
+            ImportList(data.boolEventVars);
+            ImportList(data.intEventVars);
+            ImportList(data.stringEventVars);
+            ImportList(data.vector3EventVars);
+            ImportList(data.vector2IntEventVars);
 
-            for (int i = 0; i < data.Length; i++)
+            void ImportList<T>(List<SerializableEventVarData<T>> data)
             {
-                eventVars[i].SetStoredValue(data[i]);
+                for (int i = 0; i < data.Count; i++)
+                {
+                    var a = data[i];
+                    var aHash = a.guid.GetHashCode();
+                    var eventVarIndex = guidHash.IndexOf(aHash);
+                    eventVars[eventVarIndex].SetStoredValue(a.value);
+                }
             }
         }
 
-        public SerializableData[] Export()
-        {
-            SerializableData[] data = new SerializableData[eventVars.Count];
-            for(int i = 0; i < eventVars.Count; i++)
-            {
-                data[i] = new SerializableData(eventVars[i]);
-            }
-            return data;
-        }
+        public SerializableEventVarCollection Export() => new SerializableEventVarCollection(eventVars);
+
+        [ContextMenu("Export")]
+        public void PrintExport() => Debug.Log(JsonUtility.ToJson(Export()
     }
 }
