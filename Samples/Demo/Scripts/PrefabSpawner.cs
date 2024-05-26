@@ -6,18 +6,10 @@ namespace BardicBytes.EventVarsDemo
 {
     public class PrefabSpawner : MonoBehaviour
     {
-        [SerializeField]
-        private GameObject[] prefabs = default;
-
-        [SerializeField]
-        [Min(1)]
-        private int loops = 1;
-
-        [SerializeField]
-        private Transform parent = default;
-
-        [SerializeField]
-        private bool spawnOnEnable = true;
+        [SerializeField] private GameObject[] prefabs = default;
+        [SerializeField, Min(1)] private int loops = 1;
+        [SerializeField] private Transform parent = default;
+        [SerializeField] private bool spawnOnEnable = true;
 
         private void OnEnable()
         {
@@ -30,8 +22,7 @@ namespace BardicBytes.EventVarsDemo
             {
                 for(int i = 0; i < prefabs.Length; i++)
                 {
-                    var o = Instantiate(prefabs[i], parent);
-                    o.SetActive(true);
+                    Instantiate(prefabs[i], parent).SetActive(true);
                 }
             }
         }

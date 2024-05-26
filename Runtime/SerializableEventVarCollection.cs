@@ -5,23 +5,33 @@ using UnityEngine;
 
 namespace BardicBytes.EventVars
 {
+    /// <summary>
+    /// SerializableEventVarCollection class
+    /// Holds collections of serialized event variable data for different types.
+    /// Supports centralized management of various event variable data types.
+    /// </summary>
     [System.Serializable]
     public class SerializableEventVarCollection
     {
-        //the basics
-        public List<SerializableEventVarData<string>> stringEventVars;
-        public List<SerializableEventVarData<int>> intEventVars;
-        public List<SerializableEventVarData<bool>> boolEventVars;
-        public List<SerializableEventVarData<float>> floatEventVars;
+        // Collections of serializable event variables for basic data types
+        public List<SerializableEventVarData<string>> stringEventVars; // Event variables for string type
+        public List<SerializableEventVarData<int>> intEventVars;       // Event variables for int type
+        public List<SerializableEventVarData<bool>> boolEventVars;     // Event variables for bool type
+        public List<SerializableEventVarData<float>> floatEventVars;   // Event variables for float type
 
-        //for 3D spatial
-        public List<SerializableEventVarData<Vector3>> vector3EventVars;
-        //for 2D pixels
-        public List<SerializableEventVarData<Vector2Int>> vector2IntEventVars;
+        // Collections of serializable event variables for spatial data types
+        public List<SerializableEventVarData<Vector3>> vector3EventVars;       // Event variables for 3D spatial data
+        public List<SerializableEventVarData<Vector2Int>> vector2IntEventVars; // Event variables for 2D pixel data
 
         public SerializableEventVarCollection() { }
+
+        /// <summary>
+        /// Constructor that initializes the collections based on provided event variables.
+        /// </summary>
+        /// <param name="eventVars">List of event variables to initialize from.</param>
         public SerializableEventVarCollection(List<EventVar> eventVars)
         {
+            // Initialize collections for different event variable data types
             stringEventVars = new List<SerializableEventVarData<string>>();
             intEventVars = new List<SerializableEventVarData<int>>();
             boolEventVars = new List<SerializableEventVarData<bool>>();
@@ -29,9 +39,12 @@ namespace BardicBytes.EventVars
             vector3EventVars = new List<SerializableEventVarData<Vector3>>();
             vector2IntEventVars = new List<SerializableEventVarData<Vector2Int>>();
 
+            // Populate the collections based on the input event variables
             for (int i = 0; i < eventVars.Count; i++)
             {
                 var eventVar = eventVars[i];
+
+                // Add event variables based on their type
                 if (eventVar is IEventVarInput<string> evS)
                 {
                     stringEventVars.Add(evS.GetSerializableData());

@@ -7,22 +7,24 @@ namespace BardicBytes.EventVars
     [CreateAssetMenu(menuName = "BardicBytes/EventVars/Vector2Int")]
     public class Vector2IntEventVar : EventVar<int>, IMinMax<Vector2Int>
     {
-        [SerializeField]
-        protected bool hasMin = false;
+        [field: Header("MinMax")]
+        [field: SerializeField]
+        public bool HasMin { get; protected set; } = false;
+        [field: SerializeField]
+        public bool HasMax { get; protected set; } = false;
+        
         [field: SerializeField]
         public Vector2Int MinValue { get; protected set; } = Vector2Int.zero;
-        [SerializeField]
-        protected bool hasMax = false;
         [field: SerializeField]
         public Vector2Int MaxValue { get; protected set; } = Vector2Int.one;
 
         public Vector2Int MinMaxClamp(Vector2Int val)
         {
-            if (hasMax && hasMin)
+            if (HasMax && HasMin)
                 return new Vector2Int(Mathf.Clamp(val.x, MinValue.x, MaxValue.y), Mathf.Clamp(val.y, MinValue.y, MaxValue.y));
-            else if (hasMax)
+            else if (HasMax)
                 return new Vector2Int(Mathf.Min(val.x, MaxValue.x), val.y);
-            else if (hasMin)
+            else if (HasMin)
                 return new Vector2Int(val.x, Mathf.Max(val.y, MinValue.y));
             else return val;
         }
@@ -33,6 +35,5 @@ namespace BardicBytes.EventVars
         }
 
         public override int GetTypedValue(EventVarInstanceData bc) => bc.IntValue;
-        protected override void SetInstanceConfigValue(int val, EventVarInstanceData config) => config.IntValue = val;
     }
 }

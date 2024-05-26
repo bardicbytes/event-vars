@@ -7,29 +7,29 @@ namespace BardicBytes.EventVars
     [CreateAssetMenu(menuName = "BardicBytes/EventVars/Int")]
     public class IntEventVar : EventVar<int>, IMinMax<int>
     {
-        [Header("MinMax")]
-        [SerializeField]
-        protected bool hasMin = false;
+        [field:Header("MinMax")]
+        [field: SerializeField]
+        public bool HasMin { get; protected set; } = false;
+
+        [field: SerializeField]
+        public bool HasMax { get; protected set; } = false;
         [field: SerializeField]
         public int MinValue { get; protected set; } = 0;
-        [SerializeField]
-        protected bool hasMax = false;
         [field: SerializeField]
         public int MaxValue { get; protected set; } = 1;
 
         public int MinMaxClamp(int val)
         {
-            if (hasMax && hasMin)
+            if (HasMax && HasMin)
                 return Mathf.Clamp(val, MinValue, MaxValue);
-            else if (hasMax)
+            else if (HasMax)
                 return Mathf.Min(val, MaxValue);
-            else if (hasMin)
+            else if (HasMin)
                 return Mathf.Max(val, MinValue);
             else return val;
         }
 
         public override int GetTypedValue(EventVarInstanceData bc) => bc.IntValue;
-        protected override void SetInstanceConfigValue(int val, EventVars.EventVarInstanceData config) => config.IntValue = val;
 
         public void Increment() => Raise(base.Value + 1);
     }

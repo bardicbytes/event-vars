@@ -26,7 +26,7 @@ MonoBehaviour:
   requireData: 0
   invokeNewListeners: 0
   <InitialValue>k__BackingField: 5
-  hasMin: 0
+  <HasMin>k__BackingField: 0
   <MinValue>k__BackingField: 0
-  hasMax: 0
+  <HasMax>k__BackingField: 0
   <MaxValue>k__BackingField: 1

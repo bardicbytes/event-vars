@@ -11,7 +11,5 @@ namespace BardicBytes.EventVars
         public void Toggle() => Raise(!Value);
 
         public override bool GetTypedValue(EventVars.EventVarInstanceData bc) => bc.BoolValue;
-
-        protected override void SetInstanceConfigValue(bool val, EventVars.EventVarInstanceData config) => config.BoolValue = val;
     }
 }

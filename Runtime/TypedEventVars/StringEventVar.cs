@@ -8,6 +8,5 @@ namespace BardicBytes.EventVars
     public class StringEventVar : EventVar<string>
     {
         public override string GetTypedValue(EventVarInstanceData bc) => bc.StringValue;
-        protected override void SetInstanceConfigValue(string val, EventVarInstanceData config) => config.StringValue = val;
     }
 }

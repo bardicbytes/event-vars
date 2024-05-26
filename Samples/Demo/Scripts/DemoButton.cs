@@ -19,10 +19,17 @@ namespace BardicBytes.EventVarsDemo
         [SerializeField]
         private StringEventVar stringEvent = default;
 
+        private bool isQuitting = false;
+
         private void OnValidate()
         {
             if (Text == null) Text = GetComponentInChildren<TextMeshProUGUI>();
             if(Button == null) Button = GetComponentInChildren<Button>();
+        }
+
+        private void OnApplicationQuit()
+        {
+            isQuitting = true;
         }
 
         private void OnEnable()
@@ -33,6 +40,7 @@ namespace BardicBytes.EventVarsDemo
 
         private void OnDisable()
         {
+            if (isQuitting) return;
             Button.onClick.RemoveListener(HandleClick);
         }
 

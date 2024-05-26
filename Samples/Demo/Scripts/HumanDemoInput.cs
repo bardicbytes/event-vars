@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 
 namespace BardicBytes.EventVarsDemo
 {
-    public class ScreenInput : MonoBehaviour
+    public class HumanDemoInput : MonoBehaviour
     {
         [SerializeField]
         private Vector3EventVar worldPositionInput = default;
@@ -16,10 +16,7 @@ namespace BardicBytes.EventVarsDemo
 
         void Update()
         {
-            if(EventSystem.current.IsPointerOverGameObject())
-            {
-                return;
-            }
+            if(EventSystem.current.IsPointerOverGameObject()) return;
 
             Vector3 screenPos = Vector3.zero;
             bool didInput = false;

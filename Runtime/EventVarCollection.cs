@@ -62,7 +62,7 @@ namespace BardicBytes.EventVars
 
         public SerializableEventVarCollection Export() => new SerializableEventVarCollection(eventVars);
 
-        [ContextMenu("Export")]
-        public void PrintExport() => Debug.Log(JsonUtility.ToJson(Export()
+        [ContextMenu("Print Export")]
+        public void PrintExport() => Debug.Log(JsonUtility.ToJson(Export(), true));
     }
 }

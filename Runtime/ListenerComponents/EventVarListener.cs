@@ -45,6 +45,13 @@ namespace BardicBytes.EventVars
         [SerializeField]
         protected List<ConditionalResponse> conditionalResponses = default;
 
+        private bool isQuitting = false;
+
+        private void OnApplicationQuit()
+        {
+            isQuitting = true;
+        }
+
         protected override void OnEnable()
         {
             typedEventVar?.AddListener(HandleTypedEventRaised);
@@ -54,6 +61,7 @@ namespace BardicBytes.EventVars
 
         protected override void OnDisable()
         {
+            if (isQuitting) return;
             typedEventVar?.RemoveListener(HandleTypedEventRaised);
         }
 

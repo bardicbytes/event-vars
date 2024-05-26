@@ -1,6 +1,7 @@
 
 namespace BardicBytes.EventVars
 {
+    //defines an EventVar as receiving the particular type of input when invoking
     public interface IEventVarInput<InputType>
     {
         public System.Type InputValueType => typeof(InputType);

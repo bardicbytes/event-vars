@@ -1,13 +1,20 @@
 
 # Change Log
 All notable changes to this project will be documented in this file.
+
+## [0.2.4] - 2024-05-26
+- bug fixes
+- comments and documentation
+- simplified and fixed instancer functionality and custom editor
+- reorganization of files
+
 ## [0.2.3] - 2024-02-17
--bug fixes
+- bug fixes
 
 ## [0.2.2] - 2024-02-16
--fix EventVar custom editor
--new colored asset icons for the scripts
--completely removed MinMaxEventVar from inheritance tree
+- fix EventVar custom editor
+- new colored asset icons for the scripts
+- completely removed MinMaxEventVar from inheritance tree
 
 ## [0.2.1] - 2024-02-15
 ### Bug Fixes

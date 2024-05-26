@@ -7,7 +7,8 @@ public class Human : MonoBehaviour
     private Vector3EventVar positionEvent = default;
 
     public float turnSpeed = 90f;
-    public float speed = 5f;
+    //public float speed = 5f;
+    public FloatEventVar.Field speedField = default;
     public float changeDirectionTime = 2f;
     private Rigidbody rb;
     private Vector3 movementDirection;
@@ -56,6 +57,7 @@ public class Human : MonoBehaviour
     void MoveCapsule()
     {
         rb.MoveRotation(Quaternion.RotateTowards(rb.rotation, Quaternion.LookRotation(movementDirection, Vector3.up), turnSpeed * Time.deltaTime));
-        rb.MovePosition(rb.position + transform.forward * speed * Time.fixedDeltaTime * (isPlayerInput ? 1.5f : 1f));
+        // speedField, a FloatEventVar.Field has implicit type conversion so no type casting is necessary
+        rb.MovePosition(rb.position + transform.forward * speedField * Time.fixedDeltaTime * (isPlayerInput ? 1.5f : 1f));
     }
 }
