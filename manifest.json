@@ -1,6 +1,6 @@
   {
     "name": "com.bardicbytes.eventvars",
-    "version": "0.2.4",
+    "version": "0.2.5",
     "displayName": "EventVars",
     "description": "An extensible event system for Unity using ScriptableObjects.",
     "unity": "2022.3",

@@ -1,18 +1,18 @@
-using System.Collections;
-using System.Collections.Generic;
+//alex@bardicbytes.com
+
 using UnityEngine;
 
-public class RigidbodyEventVar : MonoBehaviour
-{
-    // Start is called before the first frame update
-    void Start()
+namespace BardicBytes.EventVars.Samples
+{ 
+    /// <summary>
+    /// By configuring the initial value of asset instances of AudioEvent,
+    /// those files can be used to trigger sound effects directly.
+    /// Alternatively, unique AudioEventData can be passed to the audio event
+    /// through the Raise(AudioEventData) method
+    /// </summary>
+    [CreateAssetMenu(menuName = "BardicBytes/EventVars/Rigidbody EventVar")]
+    public class RigidbodyEventVar : EventVar<Rigidbody>
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        public override Rigidbody GetTypedValue(EventVarInstanceData data) => data.UnityObjectValue as RigidbodyEventVar;
     }
 }
