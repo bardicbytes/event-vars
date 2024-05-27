@@ -5220,7 +5220,7 @@ MonoBehaviour:
       type: 2}
     <StringValue>k__BackingField: 
     <IntValue>k__BackingField: 0
-    <FloatValue>k__BackingField: 0
+    <FloatValue>k__BackingField: 3
     <BoolValue>k__BackingField: 0
     <Vector3Value>k__BackingField: {x: 0, y: 0, z: 0}
     <Vector2IntValue>k__BackingField: {x: 0, y: 0}

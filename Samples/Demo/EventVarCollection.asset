@@ -17,3 +17,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 59724f5187d345a44b0bea9d8e151533, type: 2}
   - {fileID: 11400000, guid: 70726043ad6393c46b117afb8ba53aa2, type: 2}
   guidHash: 073e5dd8a714b7e21772a1d2
+  <ExportPretty>k__BackingField: 0
+  saveFolderName: saves
+  useFolders: 0

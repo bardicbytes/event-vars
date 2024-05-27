@@ -1,8 +1,5 @@
 //alex@bardicbytes.com
 
-using BardicBytes.EventVars;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace BardicBytes.EventVars.Samples

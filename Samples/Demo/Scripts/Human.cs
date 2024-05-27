@@ -1,3 +1,5 @@
+//alex@bardicbytes.com
+
 using BardicBytes.EventVars;
 using UnityEngine;
 
@@ -7,7 +9,6 @@ public class Human : MonoBehaviour
     private Vector3EventVar positionEvent = default;
 
     public float turnSpeed = 90f;
-    //public float speed = 5f;
     public FloatEventVar.Field speedField = default;
     public float changeDirectionTime = 2f;
     private Rigidbody rb;
