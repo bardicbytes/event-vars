@@ -1,6 +1,6 @@
 using UnityEditor;
 
-namespace BardicBytes.EventVarsEditor
+namespace BardicBytes.EventVars.Editor
 {
     public static class EditorHelper
     {

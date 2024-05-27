@@ -1,22 +1,30 @@
 //alex@bardicbytes.com
 
 using UnityEditor;
-using BardicBytes.EventVars;
 
-namespace BardicBytes.EventVarsEditor
+namespace BardicBytes.EventVars.Editor
 {
     [CustomEditor(typeof(EventVar), true), CanEditMultipleObjects]
-    public class EventVarEditor : Editor
+    public class EventVarEditor : UnityEditor.Editor
     {
-        private bool foldout = false;
+        private bool showDefaultInspector = false;
+        private bool showAdvancedOptions = false;
 
         public override void OnInspectorGUI()
         {
             var targetListener = (EventVar)target;
             EditorHelper.DrawPropertiesByName(serializedObject, targetListener.EditorProperties);
 
-            foldout = EditorGUILayout.Foldout(foldout, "Default Inspector", true);
-            if (foldout) DrawDefaultInspector();
+            showAdvancedOptions = EditorGUILayout.Foldout(showAdvancedOptions, "Advanced Options", true);
+            if (showAdvancedOptions)
+            {
+                EditorHelper.DrawPropertiesByName(serializedObject, targetListener.AdvancedEditorProperties);
+            }
+            EditorGUILayout.Space(25);
+            
+            showDefaultInspector = EditorGUILayout.Foldout(showDefaultInspector, "Default Inspector", true);
+            if (showDefaultInspector) DrawDefaultInspector();
+            
             serializedObject.ApplyModifiedProperties();
         }
     }

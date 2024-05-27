@@ -5,140 +5,68 @@ using UnityEngine;
 
 namespace BardicBytes.EventVars
 {
+    /// <summary>
+    /// The EventVarInstancer class is responsible for managing and creating instances
+    /// of EventVar objects. It acts as a factory for EventVar instances, providing
+    /// functionalities to initialize, clone, and manage EventVar instances during runtime.
+    /// 
+    /// Responsibilities include:
+    /// - Creating new instances of EventVar objects.
+    /// - Initializing instances with specified values.
+    /// - Managing the lifecycle of EventVar instances within the application.
+    ///
+    /// This class helps to encapsulate the logic around event variable instantiation,
+    /// ensuring that instances are created and managed in a consistent manner.
+    /// </summary>
     [DisallowMultipleComponent]
     public class EventVarInstancer : MonoBehaviour
     {
         [SerializeField]
-        private List<EventVar> eventVars;
-
-        [SerializeField]
-        [SerializeReference]
-        private EventVarInstanceData[] eventVarInstances;
+        private List<EventVarInstanceData> eventVarInstances;
 
         private Dictionary<EventVar, int> evInstanceLookup = default;
 
-        private bool isInitialized = false;
+        public bool IsInitialized { get; protected set; } = false;
 
 #if UNITY_EDITOR
-
-        [HideInInspector]
-        [SerializeField]
-        private int[] evHashCache;
-        protected void OnValidate()
-        {
-            bool refreshEvCache = false;
-
-            if (eventVars != null &&
-                (evHashCache == null || evHashCache.Length != eventVars.Count
-                || eventVarInstances == null || eventVarInstances.Length != eventVars.Count))
-            {
-                refreshEvCache = true;
-                List<EventVar> found = new List<EventVar>();
-                for (int i = 0; i < eventVars.Count; i++)
-                {
-                    refreshEvCache &= eventVars[i] != null;
-                    if (found.Contains(eventVars[i]) || eventVars[i] == null)
-                    {
-                        refreshEvCache = false;
-                        break;
-                    }
-                    found.Add(eventVars[i]);
-                }
-                //null or miscount
-            }
-
-            if (!refreshEvCache && eventVars != null && eventVars.Count > 0)
-            {
-                for (int i = 0; i < eventVars.Count; i++)
-                {
-                    if (eventVars[i] == null) continue;
-                    if (eventVarInstances[i] == null)
-                    {
-                        refreshEvCache = true;
-                        break;
-                    }
-                    //compare each event var to the cache
-                    if (evHashCache[i] != eventVars[i].GUID.GetHashCode())
-                    {
-                        refreshEvCache = true;
-                        break;
-                    }
-                }
-            }
-
-            if (refreshEvCache && eventVars != null && eventVars.Count > 0)
-            {
-                var instBackup = eventVarInstances;
-                var cacheBackup = evHashCache;
-                eventVarInstances = new EventVarInstanceData[eventVars.Count];
-                evHashCache = new int[eventVars.Count];
-                for (int i = 0; i < eventVars.Count; i++)
-                {
-                    if (eventVars[i] == null)
-                    {
-                        evHashCache[i] = 0;
-                        continue;
-                    }
-                    if (instBackup == null || cacheBackup == null || instBackup.Length != cacheBackup.Length)
-                    {
-                        eventVarInstances[i] = eventVars[i].CreateInstanceConfig();
-                    }
-                    else
-                    {
-                        var found = Restorebackup(eventVars[i], instBackup, cacheBackup);
-                        eventVarInstances[i] = found == null ? eventVars[i].CreateInstanceConfig() : found;
-                    }
-                    eventVarInstances[i].RefreshEditorName();
-                    evHashCache[i] = eventVars[i].GUID.GetHashCode();
-                }
-            }
-
-            EventVarInstanceData Restorebackup(EventVar src, EventVarInstanceData[] instBackup, int[] cacheBackup)
-            {
-                Debug.Assert(instBackup != null);
-                Debug.Assert(cacheBackup != null);
-                Debug.Assert(instBackup.Length == cacheBackup.Length);
-
-                EventVarInstanceData c = null;
-                for (int i = 0; i < instBackup.Length; i++)
-                {
-                    if (src.GUID.GetHashCode() == cacheBackup[i]) c = instBackup[i];
-                }
-                return c;
-            }
-        }
-
-        [ContextMenu("RefreshEditorNames()")]
+        [ContextMenu("Refresh Editor Names")]
         private void RefreshEditorNames()
         {
-            for (int i = 0; i < eventVarInstances.Length; i++)
+            for (int i = 0; i < eventVarInstances.Count; i++)
+            {
                 eventVarInstances[i].RefreshEditorName();
+            }
         }
 #endif
 
-        public void Awake()
-        {
-            Initialize();
-        }
+        public void Awake() => Initialize();
 
         private void Initialize()
         {
-            if (isInitialized && Application.isPlaying && evInstanceLookup != null)
+            if (IsInitialized && Application.isPlaying && evInstanceLookup != null)
             {
                 return;
             }
+
             evInstanceLookup = new Dictionary<EventVar, int>();
-            for (int i = 0; i < eventVars.Count; i++)
+
+            for (int i = 0; i < eventVarInstances.Count; i++)
             {
-                if (eventVars[i] == null) continue;
+                if (eventVarInstances[i].Source == null) continue;
+
                 eventVarInstances[i].RuntimeInitialize(this);
-                evInstanceLookup.Add(eventVars[i], i);
+                evInstanceLookup.Add(eventVarInstances[i].Source, i);
             }
-            isInitialized = true;
+            IsInitialized = true;
         }
 
         public T GetInstance<T>(T eventVarAssetRef) where T : EventVar => GetInstance(eventVarAssetRef as EventVar) as T;
 
+        /// <summary>
+        /// Get the instancer's copy of the argument
+        /// </summary>
+        /// <param name="eventVarAssetRef">The source asset event var of which the instancer may have a clone</param>
+        /// <returns>returns null if the instancer does not have an instance of the source event var reference</returns>
         public EventVar GetInstance(EventVar eventVarAssetRef)
         {
             EventVar ev = null;
@@ -152,14 +80,14 @@ namespace BardicBytes.EventVars
             {
                 Initialize();
                 var index = evInstanceLookup[eventVarAssetRef];
-                ev = eventVarInstances[index].ActorInstance as EventVar;
+                ev = eventVarInstances[index].EventVarInstance as EventVar;
             }
             else
             {
                 Debug.LogWarning("GetIsntance at Editor time returns null");
                 ev = null;
             }
-            Debug.Assert(ev != null, "has instance, but no instance found?, but that's not cool. Initialized? " + isInitialized);
+            Debug.Assert(ev != null, "has instance, but no instance found?, but that's not cool. Initialized? " + IsInitialized);
             return ev;
         }
 
@@ -171,21 +99,32 @@ namespace BardicBytes.EventVars
         public EventVarInstanceData FindInstanceData(EventVar ev)
         {
             EventVarInstanceData e = null;
-            for (int i = 0; i < eventVarInstances.Length; i++)
+            for (int i = 0; i < eventVarInstances.Count; i++)
             {
                 e = eventVarInstances[i];
-                if (e.Src != ev) continue;
+                if (e.Source != ev) continue;
             }
             return e;
         }
 
+        /// <summary>
+        /// Check if the instancer has an instance of a given event var.
+        /// </summary>
+        /// <param name="ev">the event var asset that may be used as a key in this instancer</param>
+        /// <returns>true if the instancer has an instance of the event var</returns>
         public bool HasInstance(EventVar ev)
         {
             if (!Application.isPlaying)
             {
-                return eventVars.Contains(ev);
+                for(int i = 0;i < eventVarInstances.Count;i++)
+                {
+                    if (eventVarInstances[i].Source == ev) return true;
+                }
+                return false;
             }
-            if (evInstanceLookup == null) Initialize();
+
+            if (!IsInitialized) Initialize();
+
             return evInstanceLookup.ContainsKey(ev);
         }
     }

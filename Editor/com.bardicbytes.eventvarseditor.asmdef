@@ -1,10 +1,12 @@
 {
     "name": "com.bardicbytes.eventvarseditor",
-    "rootNamespace": "",
+    "rootNamespace": "BardicBytes.EventVars.Editor",
     "references": [
         "GUID:8a04bf05b008e1d41a3afb6bd99d9363"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
