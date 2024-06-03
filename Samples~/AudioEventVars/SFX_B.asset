@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6004ee41cc321d4ea9cc98546d9b4fe, type: 3}
+  m_Name: SFX_B
+  m_EditorClassIdentifier: 
+  <GUID>k__BackingField: cc916886-4d0e-4518-a503-76f19cc2988d
+  untypedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  typedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  debugLogValueChange: 0
+  <RequireInstancing>k__BackingField: 0
+  resetValueOnDatalessRaise: 1
+  abortRaiseForIdenticalData: 0
+  requireData: 0
+  invokeNewListeners: 0
+  <InitialValue>k__BackingField:
+    clips:
+    - {fileID: 8300000, guid: 93d5294633c63444da0c0daeff06bcec, type: 3}
+    - {fileID: 8300000, guid: 637c8ed0437896a488876d2fc6e3e332, type: 3}
+    - {fileID: 8300000, guid: 06464c25d39f83a44b104e41030e9f2e, type: 3}
+    playClipsInOrder: 0
+    overrideGroup: 0
+    group: {fileID: 0}
+    bypassEffects: 0
+    bypassListenerEffects: 0
+    overrideVolume: 0
+    volume: 1
+    minPitch: 0.5
+    maxPitch: 0.8
+    attenuationMinDistance: 0
+  preventSameFramePlays: 1

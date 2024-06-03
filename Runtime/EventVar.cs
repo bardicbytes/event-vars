@@ -53,7 +53,7 @@ namespace BardicBytes.EventVars
          * Accessors
          */
         public virtual int TotalListeners => untypedEvent.GetPersistentEventCount() + runtimeListenerCount;
-        public virtual bool HasValue { get => false; }
+        public virtual bool ThisEventVarTypeHasValue { get => false; }
         public virtual Type StoredValueType => default;
         public virtual Type OutputValueType => default;
 
@@ -76,22 +76,34 @@ namespace BardicBytes.EventVars
          */
 
 #if UNITY_EDITOR
-        protected virtual void Reset()
+        private void Reset()
         {
+            Reset_first_EventVar();
             if (string.IsNullOrEmpty(GUID) || GUID == name) RefreshGUID();
+            Reset_last_EventVar();
         }
 
-        protected virtual void OnValidate()
+        private void OnValidate()
         {
+            OnValidate_first_EventVar();
             lastRaiseTime = 0;
             runtimeListenerCount = 0;
-
-            if (GUID != null) return;
-            RefreshGUID();
+            if (GUID == null) RefreshGUID();
+            OnValidate_last_EventVar();
         }
 
+        // extendable methods
+        protected virtual void Reset_first_EventVar() { }
+        protected virtual void Reset_last_EventVar() { }
+        protected virtual void OnValidate_first_EventVar() { }
+        protected virtual void OnValidate_last_EventVar() { }
+
+
+        /// <summary>
+        /// If an eventVar is copied, the cached GUID won't automatically
+        /// </summary>
         [ContextMenu("RefreshGUID")]
-        private void RefreshGUID()
+        public void RefreshGUID()
         {
             var p = AssetDatabase.GetAssetPath(this);
             GUID = AssetDatabase.AssetPathToGUID(p);
@@ -121,7 +133,7 @@ namespace BardicBytes.EventVars
         }
 #endif
 
-        public virtual void SetStoredValue(object newStoredValue)
+        internal virtual void SetStoredValue(object newStoredValue)
         {
             this.UntypedStoredValue = newStoredValue;
         }
@@ -232,7 +244,8 @@ namespace BardicBytes.EventVars
     }
 
     /// <summary>
-    /// The base generic type of EventVar.
+    /// The base generic type of EventVar. Inherit from this class to create an EventVar which has an output value different from its input value.
+    /// When these events are raised, value of InputType is passed as an argument, but values of OutputType are emitted
     /// </summary>
     /// <typeparam name="InputType">The Type required when raising the EventVar.</typeparam>
     /// <typeparam name="OutputType">The Type shared when the EventVar is raised.</typeparam>
@@ -323,8 +336,15 @@ namespace BardicBytes.EventVars
 
         [field: SerializeField]
         public InputType InitialValue { get; protected set; }
+
+        /// <summary>
+        /// This is the current stored value of InputType
+        /// </summary>
         public InputType TypedStoredValue { get; protected set; }
 
+        /// <summary>
+        /// This property evaluates TypedStoredValue and provides an OutputType
+        /// </summary>
         public OutputType Value
         {
             get
@@ -334,12 +354,12 @@ namespace BardicBytes.EventVars
             }
         }
 
-        public override bool HasValue { get => true; }
+        public override bool ThisEventVarTypeHasValue { get => true; }
         public override Type StoredValueType => typeof(InputType);
         public override Type OutputValueType => typeof(OutputType);
 
         public override int TotalListeners => base.TotalListeners + typedEvent.GetPersistentEventCount();
-        public override void SetStoredValue(object newStoredValue)
+        internal override void SetStoredValue(object newStoredValue)
         {
             if(newStoredValue == null || newStoredValue == default)
             {
@@ -359,7 +379,7 @@ namespace BardicBytes.EventVars
 
 #if UNITY_EDITOR
 
-        protected override void OnValidate()
+        protected override void OnValidate_first_EventVar()
         {
             if (TypedStoredValue == null
                 || (TypedStoredValue != null
@@ -367,10 +387,7 @@ namespace BardicBytes.EventVars
             {
                 SetStoredValue(InitialValue);
             }
-
-            base.OnValidate();
         }
-
 #endif
 
         protected override void OnEnable()

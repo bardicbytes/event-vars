@@ -28,7 +28,6 @@ namespace BardicBytes.EventVars
         [SerializeField]
         private bool useFolders = false;
 
-
         // accessors
         public T Get<T>(int index) where T : EventVar => (T)eventVars[index];
 
