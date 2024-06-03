@@ -25,8 +25,8 @@ namespace BardicBytes.EventVars.Editor
             var indent = EditorGUI.indentLevel;
             EditorGUI.indentLevel = 0;
 
-            Rect r1;// = new Rect(position.x, position.y, r1Width, position.height);
-            Rect r2;// = new Rect(position.x + r1.width + 5, position.y, position.width - r1.width - 5, position.height);
+            Rect r1;
+            Rect r2;
 
             if (srcProp.objectReferenceValue == null)
             {
@@ -66,7 +66,7 @@ namespace BardicBytes.EventVars.Editor
         {
             EventVarInstanceData data = dataProperty.boxedValue as EventVarInstanceData;
             
-            if (!data.Source.HasValue) return false;
+            if (!data.Source.ThisEventVarTypeHasValue) return false;
 
             var selector = data.Source.StoredValueType.FullName;
 

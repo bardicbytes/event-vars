@@ -1,6 +1,5 @@
 ﻿//alex@bardicbytes.com
 
-using UnityEditor;
 using UnityEngine;
 
 namespace BardicBytes.EventVars

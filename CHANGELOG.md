@@ -2,6 +2,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [0.2.6] - 2024-06-03
+- EventVar powered SFX system included in samples
+- more EventVarTypes added to samples
+
 ## [0.2.5] - 2024-05-26
 - RigidbodyEventVar added to samples
 - EventVarCollection now has more import/export functions
