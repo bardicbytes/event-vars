@@ -44,6 +44,8 @@ Unity will now download and import the EventVars package into your project.
 For more detailed information on setup, usage, and examples, please refer to the [getting started guide](https://github.com/bardicbytes/event-vars/blob/main/Documentation~/getting-started.md).
 
 ## Examples
+
+### Demo
 Visit the `Samples~/Demo` folder for practical examples demonstrating the capabilities and setup of EventVars.
 
 ## License

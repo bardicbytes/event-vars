@@ -18,11 +18,11 @@ namespace BardicBytes.EventVars.Editor
             //EditorGUI.indentLevel = 0;
 
             var rect = new Rect(position.x, position.y, 200, position.height);
-            SerializedProperty evProp = evFieldProperty.FindPropertyRelative("srcEV");
+            SerializedProperty evProp = evFieldProperty.FindPropertyRelative("_initialSource");
 
             if (evProp.objectReferenceValue == null)
             {
-                EditorGUI.PropertyField(rect, evFieldProperty.FindPropertyRelative("fallbackValue"), GUIContent.none);
+                EditorGUI.PropertyField(rect, evFieldProperty.FindPropertyRelative("_fallbackValue"), GUIContent.none);
                 rect = new Rect(position.x + rect.width + 5, position.y, position.width - rect.width - 5, position.height);
             }
             else
@@ -33,7 +33,7 @@ namespace BardicBytes.EventVars.Editor
             EditorGUI.PropertyField(rect, evProp, GUIContent.none);
             EditorGUI.indentLevel = indent;
 
-            SerializedProperty instancerProp = evFieldProperty.FindPropertyRelative("instancer");
+            SerializedProperty instancerProp = evFieldProperty.FindPropertyRelative("_instancer");
             var hostObject = evFieldProperty.serializedObject.targetObject as MonoBehaviour;
             var instancer = hostObject.GetComponent<EventVarInstancer>();
             bool srcEventVarIsSet = evProp.objectReferenceValue != null;
