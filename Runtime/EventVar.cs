@@ -29,8 +29,8 @@ namespace BardicBytes.EventVars
     {
         public abstract class BaseField
         {
-            [SerializeField] protected EventVarInstancer instancer;
-            public virtual void Validate() => Debug.Assert(instancer != null);
+            [SerializeField] protected EventVarInstancer _instancer;
+            public virtual void Validate() => Debug.Assert(_instancer != null);
         }
 
         public virtual string[] EditorProperties => new string[] { "untypedEvent"};
@@ -247,13 +247,13 @@ namespace BardicBytes.EventVars
     /// The base generic type of EventVar. Inherit from this class to create an EventVar which has an output value different from its input value.
     /// When these events are raised, value of InputType is passed as an argument, but values of OutputType are emitted
     /// </summary>
-    /// <typeparam name="InputType">The Type required when raising the EventVar.</typeparam>
-    /// <typeparam name="OutputType">The Type shared when the EventVar is raised.</typeparam>
-    /// <typeparam name="EventVarType">The Type that is implementing this generic EventVar class.</typeparam>
-    public abstract class EventVar<InputType, OutputType, EventVarType> : 
+    /// <typeparam name="TInput">The Type required when raising the EventVar.</typeparam>
+    /// <typeparam name="TOutput">The Type shared when the EventVar is raised.</typeparam>
+    /// <typeparam name="TEventVar">The Type that is implementing this generic EventVar class.</typeparam>
+    public abstract class EventVar<TInput, TOutput, TEventVar> : 
         EventVar,
-        IEventVarInput<InputType>
-        where EventVarType : EventVar<InputType, OutputType, EventVarType>
+        IEventVarInput<TInput>
+        where TEventVar : EventVar<TInput, TOutput, TEventVar>
     {
     
         public override string[] EditorProperties => new string[] {
@@ -270,47 +270,55 @@ namespace BardicBytes.EventVars
             "abortRaiseForIdenticalData"
         };
 
-        public static implicit operator OutputType(EventVar<InputType, OutputType, EventVarType> ev) => ev.Value;
+        public static implicit operator TOutput(EventVar<TInput, TOutput, TEventVar> ev) => ev.Value;
+
 
         /// <summary>
         /// When used as a serialized member of an UnityEngine.Object like MonoBehaviours and ScriptableObject,
-        /// allows easy access to the instanced value.
+        /// allows a script to be configured to use an EventVar or a local value
         /// </summary>
         [Serializable]
         public class Field : BaseField
         {
-            public static implicit operator OutputType(Field f) => f.Eval();
+            public static implicit operator TOutput(Field f) => f.Evaluate();
 
-            [SerializeField] private OutputType fallbackValue = default;
-            [SerializeField] private EventVarType srcEV = default;
+            [SerializeField] private TOutput _fallbackValue = default;
+            [SerializeField] private TEventVar _initialSource = default;
 
-            public OutputType Value => Eval();
-            public EventVarType Source => srcEV;
+            private TEventVar _currentSource = default;
 
-            private OutputType Eval()
+            public TOutput Value => Evaluate();
+            public TEventVar Source => _initialSource;
+
+            private TOutput Evaluate()
             {
-                if (srcEV == null)
+                if (_initialSource == null) return _fallbackValue;
+
+                if (_currentSource == null) _currentSource = _initialSource;
+
+                if (_instancer != null && _instancer.HasInstance(_currentSource))
                 {
-                    return fallbackValue;
+                    return _instancer.GetInstance(_currentSource).Value;
                 }
 
-                if (instancer != null && instancer.HasInstance(srcEV))
-                {
-                    var ai = instancer.GetInstance(srcEV);
-                    if (ai == null && srcEV.RequireInstancing)
-                    {
-                        Debug.LogWarning("failed to find instance for " + srcEV.name + " in " + instancer.name);
-                    }
-                    if (ai == null) return srcEV != null ? srcEV.Value : fallbackValue;
-                    return ai.Evaluate();
-                }
+                return _currentSource.Value;
+            }
 
-                return srcEV.Value;
+            /// <summary>
+            /// sets the source override 
+            /// </summary>
+            /// <param name="newSource">if null, the source will be reset to the initial source whether or not the initial source is null</param>
+            public void SetSourceOverride(TEventVar newSource)
+            {
+                var nextSource = newSource;
+                if (nextSource == null) nextSource = _initialSource;
+                _currentSource = nextSource;
             }
         }
 
+
         [Serializable]
-        public class UnityEvent : UnityEvent<OutputType> { }
+        public class UnityEvent : UnityEvent<TOutput> { }
 
         [SerializeField]
         protected UnityEvent typedEvent = default;
@@ -335,17 +343,17 @@ namespace BardicBytes.EventVars
         protected bool invokeNewListeners = false;
 
         [field: SerializeField]
-        public InputType InitialValue { get; protected set; }
+        public TInput InitialValue { get; protected set; }
 
         /// <summary>
         /// This is the current stored value of InputType
         /// </summary>
-        public InputType TypedStoredValue { get; protected set; }
+        public TInput TypedStoredValue { get; protected set; }
 
         /// <summary>
         /// This property evaluates TypedStoredValue and provides an OutputType
         /// </summary>
-        public OutputType Value
+        public TOutput Value
         {
             get
             {
@@ -355,8 +363,8 @@ namespace BardicBytes.EventVars
         }
 
         public override bool ThisEventVarTypeHasValue { get => true; }
-        public override Type StoredValueType => typeof(InputType);
-        public override Type OutputValueType => typeof(OutputType);
+        public override Type StoredValueType => typeof(TInput);
+        public override Type OutputValueType => typeof(TOutput);
 
         public override int TotalListeners => base.TotalListeners + typedEvent.GetPersistentEventCount();
         internal override void SetStoredValue(object newStoredValue)
@@ -365,7 +373,7 @@ namespace BardicBytes.EventVars
             {
                 TypedStoredValue = default;
             }
-            else if(newStoredValue is InputType typedValue)
+            else if(newStoredValue is TInput typedValue)
             {
                 this.TypedStoredValue = typedValue;
             }
@@ -401,9 +409,9 @@ namespace BardicBytes.EventVars
             base.OnEnable();
         }
 
-        public virtual OutputType Evaluate() => Evaluate((InputType)UntypedStoredValue);
+        public virtual TOutput Evaluate() => Evaluate((TInput)UntypedStoredValue);
 
-        public abstract OutputType Evaluate(InputType inValue);
+        public abstract TOutput Evaluate(TInput inValue);
 
         protected override void Initialize()
         {
@@ -434,7 +442,7 @@ namespace BardicBytes.EventVars
             base.Raise();
         }
 
-        public virtual void Raise(InputType data)
+        public virtual void Raise(TInput data)
         {
             if (Debug.isDebugBuild) Debug.Assert(!RequireInstancing || IsActorInstance);
 
@@ -455,7 +463,7 @@ namespace BardicBytes.EventVars
             base.Raise();
         }
 
-        private void ChangeCurrentValue(InputType data)
+        private void ChangeCurrentValue(TInput data)
         {
             if (Debug.isDebugBuild && debugLogValueChange && !data.Equals(TypedStoredValue)) Debug.Log($"{name} value changes. {TypedStoredValue}={data}");
             SetStoredValue(data);
@@ -464,7 +472,7 @@ namespace BardicBytes.EventVars
         public override void AddListener(UnityAction action) => throw new NotImplementedException("Typed EventVars must use typed events.");
         public override void RemoveListener(UnityAction action) => throw new NotImplementedException("Typed EventVars must use typed events.");
 
-        public virtual void AddListener(UnityAction<OutputType> action)
+        public virtual void AddListener(UnityAction<TOutput> action)
         {
             if (Debug.isDebugBuild) Debug.Assert(!RequireInstancing || IsActorInstance);
 
@@ -473,7 +481,7 @@ namespace BardicBytes.EventVars
             if (invokeNewListeners) action.Invoke(Value);
         }
 
-        public void AddListenerWithoutInvoke(UnityAction<OutputType> action)
+        public void AddListenerWithoutInvoke(UnityAction<TOutput> action)
         {
             if (Debug.isDebugBuild) Debug.Assert(!RequireInstancing || IsActorInstance);
 
@@ -481,13 +489,13 @@ namespace BardicBytes.EventVars
             runtimeListenerCount++;
         }
 
-        public virtual void RemoveListener(UnityAction<OutputType> action)
+        public virtual void RemoveListener(UnityAction<TOutput> action)
         {
             typedEvent.RemoveListener(action);
             runtimeListenerCount--;
         }
 
-        public void SetInitialValue(InputType initialValue)
+        public void SetInitialValue(TInput initialValue)
         {
             this.InitialValue = initialValue;
             if (isInitialized) ChangeCurrentValue(initialValue);
@@ -499,10 +507,10 @@ namespace BardicBytes.EventVars
         /// </summary>
         /// <param name="data">The EventVarInsanceData</param>
         /// <returns>The typed value stored in the EventVarInsanceData arg</returns>
-        public abstract InputType GetTypedValue(EventVarInstanceData data);
+        public abstract TInput GetTypedValue(EventVarInstanceData data);
 
         public override void SetInitialValue(EventVarInstanceData data) => SetInitialValue(GetTypedValue(data));
 
-        public SerializableEventVarData<InputType> GetSerializableData() => new SerializableEventVarData<InputType>(this);
+        public SerializableEventVarData<TInput> GetSerializableData() => new SerializableEventVarData<TInput>(this);
     }
 }

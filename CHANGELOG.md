@@ -2,6 +2,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [0.2.7] - 2024-06-05
+- Fixed design/implementation issue with the event var fields relationship to the instancer
+
 ## [0.2.6] - 2024-06-03
 - EventVar powered SFX system included in samples
 - more EventVarTypes added to samples
