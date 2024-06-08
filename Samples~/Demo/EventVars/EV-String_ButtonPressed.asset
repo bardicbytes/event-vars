@@ -16,13 +16,9 @@ MonoBehaviour:
   untypedEvent:
     m_PersistentCalls:
       m_Calls: []
-  typedEvent:
-    m_PersistentCalls:
-      m_Calls: []
   debugLogValueChange: 0
   <RequireInstancing>k__BackingField: 0
   resetValueOnDatalessRaise: 1
   abortRaiseForIdenticalData: 0
   requireData: 0
-  invokeNewListeners: 0
   <InitialValue>k__BackingField: 
