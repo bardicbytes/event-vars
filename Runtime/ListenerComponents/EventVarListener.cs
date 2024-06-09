@@ -22,23 +22,23 @@ namespace BardicBytes.EventVars
         protected virtual void HandleUntypedEventRaised() => untypedResponse.Invoke();
     }
 
-    public abstract class EventVarListener<DataType> : EventVarListener
+    public abstract class EventVarListener<T> : EventVarListener
     {
         public override string[] EditorProperties => new string[] { "typedEventVar", "typedResponse", "invokeOnEnable", "conditionalResponses" };
 
         [System.Serializable]
         public class ConditionalResponse
         {
-            public DataType requiredResponse;
-            public EventVar<DataType>.UnityEvent cEvent;
+            public T requiredResponse;
+            public EventVar<T>.OutputUnityEvent conditionalEvent;
         }
 
         [Space]
 
         [SerializeField]
-        protected EventVar<DataType> typedEventVar = default;
+        protected EventVar<T> typedEventVar = default;
         [SerializeField]
-        protected EventVar<DataType>.UnityEvent typedResponse = default;
+        protected EventVar<T>.OutputUnityEvent typedResponse = default;
         [SerializeField]
         private bool invokeOnEnable = false;
 
@@ -65,7 +65,7 @@ namespace BardicBytes.EventVars
             typedEventVar?.RemoveListener(HandleTypedEventRaised);
         }
 
-        protected virtual void HandleTypedEventRaised(DataType data)
+        protected virtual void HandleTypedEventRaised(T data)
         {
             typedResponse.Invoke(data);
 
@@ -73,7 +73,7 @@ namespace BardicBytes.EventVars
             {
                 if (!conditionalResponses[i].requiredResponse.Equals(data)) continue;
 
-                conditionalResponses[i].cEvent.Invoke(data);
+                conditionalResponses[i].conditionalEvent.Invoke(data);
             }
         }
     }

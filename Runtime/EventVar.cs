@@ -27,15 +27,30 @@ namespace BardicBytes.EventVars
     [CreateAssetMenu(menuName = "BardicBytes/EventVars/EventVar without Data")]
     public class EventVar : ScriptableObject
     {
+        /// <summary>
+        /// This is the base class for all EventVar fields.
+        /// </summary>
         public abstract class BaseField
         {
             [SerializeField] protected EventVarInstancer _instancer;
             public virtual void Validate() => Debug.Assert(_instancer != null);
         }
 
-        public virtual string[] EditorProperties => new string[] { "untypedEvent"};
+#if UNITY_EDITOR
+        /// <summary>
+        /// This property provides the array of propertyNames that the custom editor will draw in the inspector window. 
+        /// Override this property and return different member names to customize the editor.
+        /// </summary>
+        public virtual string[] EditorProperties => new string[] { "untypedEvent" };
+        /// <summary>
+        /// Similar to EditorProperties, but these properties will be drawn within a foldout
+        /// </summary>
         public virtual string[] AdvancedEditorProperties => new string[] {};
+#endif
 
+        /// <summary>
+        /// 
+        /// </summary>
         [field: HideInInspector]
         [field: SerializeField]
         public string GUID { get; private set; } = Guid.NewGuid().ToString();
@@ -43,7 +58,6 @@ namespace BardicBytes.EventVars
         /*
          * Serialized / Inspector Fields and AutoProperties
          */
-
         public virtual object UntypedStoredValue { get; protected set; }
 
         [SerializeField]
@@ -79,7 +93,7 @@ namespace BardicBytes.EventVars
         private void Reset()
         {
             Reset_first_EventVar();
-            if (string.IsNullOrEmpty(GUID) || GUID == name) RefreshGUID();
+            if (string.IsNullOrEmpty(GUID)) RefreshGUID();
             Reset_last_EventVar();
         }
 
@@ -88,7 +102,7 @@ namespace BardicBytes.EventVars
             OnValidate_first_EventVar();
             lastRaiseTime = 0;
             runtimeListenerCount = 0;
-            if (GUID == null) RefreshGUID();
+            if (string.IsNullOrEmpty(GUID)) RefreshGUID();
             OnValidate_last_EventVar();
         }
 
@@ -161,7 +175,6 @@ namespace BardicBytes.EventVars
          * public methods
          */
 
-
         /// <summary>
         /// Insantiates a clone of THIS.
         /// </summary>
@@ -223,29 +236,29 @@ namespace BardicBytes.EventVars
     /// <summary>
     /// This "Self-Evaluating" type is a convenience implementation for EventVars that evaluate to the same type.
     /// </summary>
-    /// <typeparam name="InputType">The Type that the EventVar stores and shares when raised.</typeparam>
-    public abstract class EventVar<InputType> : 
-        EventVar<InputType, InputType>, 
-        IEventVarInput<InputType> { }
+    /// <typeparam name="TInput">The Type that the EventVar stores and shares when raised.</typeparam>
+    public abstract class EventVar<TInput> : 
+        EventVar<TInput, TInput>, 
+        IEventVarInput<TInput> { }
 
     /// <summary>
     /// This generic EventVar is for when the Input type and Output type match.
     /// Most EventVars Evaluate to the same type.
     /// </summary>
-    /// <typeparam name="InputType">Input Type that must extend the Output Type</typeparam>
-    /// <typeparam name="OutputType">The Output Type</typeparam>
-    public abstract class EventVar<InputType, OutputType> : 
-        EventVar<InputType, OutputType, EventVar<InputType, OutputType>>, 
-        IEventVarInput<InputType> 
-        where InputType : OutputType
+    /// <typeparam name="TInput">Input Type that must extend the Output Type</typeparam>
+    /// <typeparam name="TOutput">The Output Type</typeparam>
+    public abstract class EventVar<TInput, TOutput> : 
+        EventVar<TInput, TOutput, EventVar<TInput, TOutput>>, 
+        IEventVarInput<TInput> 
+        where TInput : TOutput
     {
         // This EventVar always Evaluates 
-        public override OutputType Evaluate(InputType val) => val;
+        public override TOutput Evaluate(TInput val) => val;
     }
 
     /// <summary>
     /// The base generic type of EventVar. Inherit from this class to create an EventVar which has an output value different from its input value.
-    /// When these events are raised, value of InputType is passed as an argument, but values of OutputType are emitted
+    /// When these events are raised, value of TInput is passed as an argument, but values of TOutput are emitted
     /// </summary>
     /// <typeparam name="TInput">The Type required when raising the EventVar.</typeparam>
     /// <typeparam name="TOutput">The Type shared when the EventVar is raised.</typeparam>
@@ -260,8 +273,6 @@ namespace BardicBytes.EventVars
             StringFormatting.GetBackingFieldName("InitialValue"),
             "typedEvent",
         };
-
-
 
         public override string[] AdvancedEditorProperties => new string[] {
             "requireData",
@@ -315,13 +326,10 @@ namespace BardicBytes.EventVars
                 _currentSource = nextSource;
             }
         }
-
-
-        [Serializable]
-        public class UnityEvent : UnityEvent<TOutput> { }
+        public class OutputUnityEvent : UnityEvent<TOutput> { }
 
         [SerializeField]
-        protected UnityEvent typedEvent = default;
+        protected OutputUnityEvent typedEvent = default;
 
         [Space]
         [SerializeField]
@@ -346,12 +354,12 @@ namespace BardicBytes.EventVars
         public TInput InitialValue { get; protected set; }
 
         /// <summary>
-        /// This is the current stored value of InputType
+        /// This is the current stored value of TInput
         /// </summary>
         public TInput TypedStoredValue { get; protected set; }
 
         /// <summary>
-        /// This property evaluates TypedStoredValue and provides an OutputType
+        /// This property evaluates TypedStoredValue and provides an TOutput
         /// </summary>
         public TOutput Value
         {
