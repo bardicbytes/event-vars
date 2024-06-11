@@ -12,11 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6004ee41cc321d4ea9cc98546d9b4fe, type: 3}
   m_Name: SFX_A
   m_EditorClassIdentifier: 
-  <GUID>k__BackingField: cc916886-4d0e-4518-a503-76f19cc2988d
+  <GUID>k__BackingField: b2b8930e93cb0024fa14641faca787db
   untypedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  typedEvent:
     m_PersistentCalls:
       m_Calls: []
   debugLogValueChange: 0
@@ -24,18 +21,17 @@ MonoBehaviour:
   resetValueOnDatalessRaise: 1
   abortRaiseForIdenticalData: 0
   requireData: 0
-  invokeNewListeners: 0
   <InitialValue>k__BackingField:
     clips:
     - {fileID: 8300000, guid: 618c296b3ccf3b447b964f0f856c5f51, type: 3}
-    playClipsInOrder: 0
+    selectionMode: 0
     overrideGroup: 0
     group: {fileID: 0}
-    bypassEffects: 0
-    bypassListenerEffects: 0
     overrideVolume: 0
     volume: 0.5
+    bypassEffects: 0
+    bypassListenerEffects: 0
     minPitch: 0.2
     maxPitch: 0.5
     attenuationMinDistance: 0
-  preventSameFramePlays: 1
+  _preventSameFramePlays: 1

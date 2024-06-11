@@ -6,6 +6,9 @@ using UnityEngine.Events;
 
 namespace BardicBytes.EventVars
 {
+    /// <summary>
+    /// This component subscribes to an EventVar and invokes a UnityEvent on the game object.
+    /// </summary>
     public class EventVarListener : MonoBehaviour
     {
         public virtual string[] EditorProperties => new string[]{"untypedEventVar", "untypedResponse" };
@@ -22,6 +25,10 @@ namespace BardicBytes.EventVars
         protected virtual void HandleUntypedEventRaised() => untypedResponse.Invoke();
     }
 
+    /// <summary>
+    /// This base abstract class allows for easy creation of listener components of all types.
+    /// </summary>
+    /// <typeparam name="T">the output type of the typed EventVar, not the EventVar type itself</typeparam>
     public abstract class EventVarListener<T> : EventVarListener
     {
         public override string[] EditorProperties => new string[] { "typedEventVar", "typedResponse", "invokeOnEnable", "conditionalResponses" };
@@ -52,14 +59,13 @@ namespace BardicBytes.EventVars
             isQuitting = true;
         }
 
-        protected override void OnEnable()
+        protected override sealed void OnEnable()
         {
             typedEventVar?.AddListener(HandleTypedEventRaised);
-
             if (this.invokeOnEnable) HandleTypedEventRaised(typedEventVar.Value);
         }
 
-        protected override void OnDisable()
+        protected override sealed void OnDisable()
         {
             if (isQuitting) return;
             typedEventVar?.RemoveListener(HandleTypedEventRaised);

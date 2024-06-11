@@ -27,15 +27,9 @@ namespace BardicBytes.EventVars
     [CreateAssetMenu(menuName = "BardicBytes/EventVars/EventVar without Data")]
     public class EventVar : ScriptableObject
     {
-        /// <summary>
-        /// This is the base class for all EventVar fields.
-        /// </summary>
-        public abstract class BaseField
-        {
-            [SerializeField] protected EventVarInstancer _instancer;
-            public virtual void Validate() => Debug.Assert(_instancer != null);
-        }
-
+        /* 
+         * editor only code
+         */
 #if UNITY_EDITOR
         /// <summary>
         /// This property provides the array of propertyNames that the custom editor will draw in the inspector window. 
@@ -45,51 +39,12 @@ namespace BardicBytes.EventVars
         /// <summary>
         /// Similar to EditorProperties, but these properties will be drawn within a foldout
         /// </summary>
-        public virtual string[] AdvancedEditorProperties => new string[] {};
-#endif
+        public virtual string[] AdvancedEditorProperties => new string[] { };
 
-        /// <summary>
-        /// 
-        /// </summary>
-        [field: HideInInspector]
-        [field: SerializeField]
-        public string GUID { get; private set; } = Guid.NewGuid().ToString();
-
-        /*
-         * Serialized / Inspector Fields and AutoProperties
-         */
-        public virtual object UntypedStoredValue { get; protected set; }
-
-        [SerializeField]
-        protected UnityEvent untypedEvent = default;
-
-        /*
-         * Accessors
-         */
-        public virtual int TotalListeners => untypedEvent.GetPersistentEventCount() + runtimeListenerCount;
         public virtual bool ThisEventVarTypeHasValue { get => false; }
+
         public virtual Type StoredValueType => default;
-        public virtual Type OutputValueType => default;
 
-        /*
-         * public auto properties
-         */
-        public EventVar CloneSource { get; protected set; } = null;
-        public EventVarInstancer InstanceOwner { get; protected set; } = null;
-        public bool IsActorInstance { get; protected set; } = false;
-
-        /*
-         * protected / private fields
-         */
-        protected int runtimeListenerCount = 0;
-        protected float lastRaiseTime;
-        protected bool isInitialized = false;
-
-        /*
-         * protected / private methods
-         */
-
-#if UNITY_EDITOR
         private void Reset()
         {
             Reset_first_EventVar();
@@ -97,7 +52,7 @@ namespace BardicBytes.EventVars
             Reset_last_EventVar();
         }
 
-        private void OnValidate()
+        protected virtual void OnValidate()
         {
             OnValidate_first_EventVar();
             lastRaiseTime = 0;
@@ -122,36 +77,62 @@ namespace BardicBytes.EventVars
             var p = AssetDatabase.GetAssetPath(this);
             GUID = AssetDatabase.AssetPathToGUID(p);
         }
-
-        [MenuItem(itemName: "Bardic Bytes/EventVars/Refresh All GUIDs")]
-        private static void RefreshAllGUIDs()
-        {
-            string[] foundAssetGUIDs = AssetDatabase.FindAssets("t:BaseEventVar");
-            try
-            {
-                for (int i = 0; i < foundAssetGUIDs.Length; i++)
-                {
-                    var path = AssetDatabase.GUIDToAssetPath(foundAssetGUIDs[i]);
-                    var asset = AssetDatabase.LoadAssetAtPath<EventVar>(path);
-                    if (asset.GUID != foundAssetGUIDs[i])
-                    {
-                        Debug.Log($"{path} had incorrect GUID recorded. Fixed.");
-                        asset.GUID = foundAssetGUIDs[i];
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.LogError(e);
-            }
-        }
 #endif
 
-        internal virtual void SetStoredValue(object newStoredValue)
+        /*
+         * Runtime code
+         */
+
+        /// <summary>
+        /// This is the base class for all EventVar fields.
+        /// </summary>
+        public abstract class BaseField
         {
-            this.UntypedStoredValue = newStoredValue;
+            [SerializeField] protected EventVarInstancer _instancer;
+            public virtual void Validate() => Debug.Assert(_instancer != null);
         }
 
+        /// <summary>
+        /// This GUID is a cache of the asset's GUID according to Unity's Asset Database.
+        /// </summary>
+        [field: HideInInspector]
+        [field: SerializeField]
+        public string GUID { get; private set; } = Guid.NewGuid().ToString();
+
+        /*
+         * Serialized / Inspector Fields and AutoProperties
+         */
+        public virtual object UntypedStoredValue { get; protected set; }
+
+        [SerializeField] protected UnityEvent untypedEvent = default;
+
+        /*
+         * Public Accessors
+         */
+        /// <summary>
+        /// The total number of event listeners
+        /// </summary>
+        /// 
+        public virtual int TotalListeners => untypedEvent.GetPersistentEventCount() + runtimeListenerCount;
+        //public virtual Type OutputValueType => default;
+
+        /*
+         * public auto properties
+         */
+        public EventVar CloneSource { get; protected set; } = null;
+        public EventVarInstancer InstanceOwner { get; protected set; } = null;
+        public bool IsActorInstance { get; protected set; } = false;
+
+        /*
+         * Protected fields
+         */
+        protected int runtimeListenerCount = 0;
+        protected float lastRaiseTime;
+        protected bool isInitialized = false;
+
+        /*
+         * protected/private/internal methods
+         */
         protected virtual void OnEnable()
         {
             if (untypedEvent != null) untypedEvent.RemoveAllListeners();
@@ -174,6 +155,15 @@ namespace BardicBytes.EventVars
         /*
          * public methods
          */
+
+        /// <summary>
+        /// Directly replaces the untyped stored value of the eventVar
+        /// </summary>
+        /// <param name="newStoredValue"></param>
+        public virtual void SetStoredValue(object newStoredValue)
+        {
+            this.UntypedStoredValue = newStoredValue;
+        }
 
         /// <summary>
         /// Insantiates a clone of THIS.
@@ -229,7 +219,6 @@ namespace BardicBytes.EventVars
             throw new NotImplementedException("There's no reason to instance an event var without without data. " + this.name);
         }
 
-
         public override string ToString() => name + ". " + UntypedStoredValue;
     }
 
@@ -268,7 +257,10 @@ namespace BardicBytes.EventVars
         IEventVarInput<TInput>
         where TEventVar : EventVar<TInput, TOutput, TEventVar>
     {
-    
+
+#if UNITY_EDITOR
+        public override bool ThisEventVarTypeHasValue { get => true; }
+
         public override string[] EditorProperties => new string[] {
             StringFormatting.GetBackingFieldName("InitialValue"),
             "typedEvent",
@@ -277,20 +269,25 @@ namespace BardicBytes.EventVars
         public override string[] AdvancedEditorProperties => new string[] {
             "requireData",
             "resetValueOnDatalessRaise",
-            "invokeNewListeners",
             "abortRaiseForIdenticalData"
         };
 
+#endif
+
+        // this enables the implicit conversion of an EventVar to it's output type
         public static implicit operator TOutput(EventVar<TInput, TOutput, TEventVar> ev) => ev.Value;
 
+        // by nesting this class within the generic EventVar,
+        // we create a Field type that is automatically nested within any new subclasses
 
         /// <summary>
         /// When used as a serialized member of an UnityEngine.Object like MonoBehaviours and ScriptableObject,
-        /// allows a script to be configured to use an EventVar or a local value
+        /// allows a script to be configured to use an EventVar or a local value.
         /// </summary>
         [Serializable]
         public class Field : BaseField
         {
+            // this enables the implicit conversion of an EventVar's field class to the event var's output type
             public static implicit operator TOutput(Field f) => f.Evaluate();
 
             [SerializeField] private TOutput _fallbackValue = default;
@@ -298,10 +295,13 @@ namespace BardicBytes.EventVars
 
             private TEventVar _currentSource = default;
 
-            public TOutput Value => Evaluate();
             public TEventVar Source => _initialSource;
 
-            private TOutput Evaluate()
+            /// <summary>
+            /// Gets the relevant value for this field based on the configuartion.
+            /// </summary>
+            /// <returns>a value of the output type</returns>
+            public TOutput Evaluate()
             {
                 if (_initialSource == null) return _fallbackValue;
 
@@ -326,6 +326,8 @@ namespace BardicBytes.EventVars
                 _currentSource = nextSource;
             }
         }
+
+        [Serializable]
         public class OutputUnityEvent : UnityEvent<TOutput> { }
 
         [SerializeField]
@@ -346,9 +348,6 @@ namespace BardicBytes.EventVars
         [SerializeField]
         [Tooltip("Also prevents reset/dataless raises if current value matches initial value")]
         protected bool requireData = false;
-        [Tooltip("When TRUE, listener components are direclty invoked immediately when added.")]
-        [SerializeField]
-        protected bool invokeNewListeners = false;
 
         [field: SerializeField]
         public TInput InitialValue { get; protected set; }
@@ -370,12 +369,12 @@ namespace BardicBytes.EventVars
             }
         }
 
-        public override bool ThisEventVarTypeHasValue { get => true; }
         public override Type StoredValueType => typeof(TInput);
-        public override Type OutputValueType => typeof(TOutput);
+        //public override Type OutputValueType => typeof(TOutput);
 
         public override int TotalListeners => base.TotalListeners + typedEvent.GetPersistentEventCount();
-        internal override void SetStoredValue(object newStoredValue)
+
+        public override void SetStoredValue(object newStoredValue)
         {
             if(newStoredValue == null || newStoredValue == default)
             {
@@ -395,14 +394,20 @@ namespace BardicBytes.EventVars
 
 #if UNITY_EDITOR
 
-        protected override void OnValidate_first_EventVar()
+        protected override sealed void OnValidate()
         {
+            base.OnValidate_first_EventVar();
             if (TypedStoredValue == null
                 || (TypedStoredValue != null
                 && !TypedStoredValue.Equals(InitialValue)))
             {
                 SetStoredValue(InitialValue);
             }
+
+            lastRaiseTime = 0;
+            runtimeListenerCount = 0;
+            if (string.IsNullOrEmpty(GUID)) RefreshGUID();
+            base.OnValidate_last_EventVar();
         }
 #endif
 
@@ -417,15 +422,30 @@ namespace BardicBytes.EventVars
             base.OnEnable();
         }
 
+        private void SetInitialValue(TInput initialValue)
+        {
+            this.InitialValue = initialValue;
+            if (isInitialized) ChangeCurrentValue(initialValue);
+            else SetStoredValue(initialValue);
+        }
+
+        /// <summary>
+        /// evaluates the stored input type value
+        /// </summary>
+        /// <returns>the evaluated output type value</returns>
         public virtual TOutput Evaluate() => Evaluate((TInput)UntypedStoredValue);
 
+        /// <summary>
+        /// Interprets the inValue argument and returns an output value object
+        /// </summary>
+        /// <param name="inValue">an object of the Input type of the event var</param>
+        /// <returns>an object of the output type of the event var</returns>
         public abstract TOutput Evaluate(TInput inValue);
 
         protected override void Initialize()
         {
             if (isInitialized || !Application.isPlaying) return;
             base.Initialize();
-
             SetInitialValue(InitialValue);
         }
 
@@ -434,6 +454,9 @@ namespace BardicBytes.EventVars
         // seprate for extensibility purposes
         public virtual string GetValueString() => TypedStoredValue == null ? "null value" : TypedStoredValue.ToString();
 
+        /// <summary>
+        /// call this function to raise the event. The configuration of the event determines the outcome, and this function may be aborted.
+        /// </summary>
         public override void Raise()
         {
             if (Debug.isDebugBuild) Debug.Assert(!RequireInstancing || IsActorInstance);
@@ -450,6 +473,10 @@ namespace BardicBytes.EventVars
             base.Raise();
         }
 
+        /// <summary>
+        /// This function will change the EventVar's value then raise the event.
+        /// </summary>
+        /// <param name="data">the new value for the event</param>
         public virtual void Raise(TInput data)
         {
             if (Debug.isDebugBuild) Debug.Assert(!RequireInstancing || IsActorInstance);
@@ -477,19 +504,20 @@ namespace BardicBytes.EventVars
             SetStoredValue(data);
         }
 
+        /// <summary>
+        /// This function should not be used for typed eventvars. Use the AddListener override
+        /// </summary>
         public override void AddListener(UnityAction action) => throw new NotImplementedException("Typed EventVars must use typed events.");
+        /// <summary>
+        /// This function should not be used for typed eventvars. Use the RemoveListener override
+        /// </summary>
         public override void RemoveListener(UnityAction action) => throw new NotImplementedException("Typed EventVars must use typed events.");
 
+        /// <summary>
+        /// adds the action to the event
+        /// </summary>
+        /// <param name="action">this action will be invoked when the typed event is raised</param>
         public virtual void AddListener(UnityAction<TOutput> action)
-        {
-            if (Debug.isDebugBuild) Debug.Assert(!RequireInstancing || IsActorInstance);
-
-            AddListenerWithoutInvoke(action);
-
-            if (invokeNewListeners) action.Invoke(Value);
-        }
-
-        public void AddListenerWithoutInvoke(UnityAction<TOutput> action)
         {
             if (Debug.isDebugBuild) Debug.Assert(!RequireInstancing || IsActorInstance);
 
@@ -497,17 +525,14 @@ namespace BardicBytes.EventVars
             runtimeListenerCount++;
         }
 
+        /// <summary>
+        /// removes the action from the event
+        /// </summary>
+        /// <param name="action">this action will no longer be invoked</param>
         public virtual void RemoveListener(UnityAction<TOutput> action)
         {
             typedEvent.RemoveListener(action);
             runtimeListenerCount--;
-        }
-
-        public void SetInitialValue(TInput initialValue)
-        {
-            this.InitialValue = initialValue;
-            if (isInitialized) ChangeCurrentValue(initialValue);
-            else SetStoredValue(initialValue);
         }
 
         /// <summary>

@@ -1,8 +1,13 @@
 using UnityEngine;
 using UnityEditor;
+using System.Collections.Generic;
 
 namespace BardicBytes.EventVars.Editor
 {
+    // before this class, copied EventVars had cached GUID issues
+    /// <summary>
+    /// This class makes sure that when a new eventVar is created or even copied from an existing asset, the GUID is refreshed.
+    /// </summary>
     public class EventVarPostprocessor : AssetPostprocessor
     {
         // This method is called whenever an asset is created or imported
@@ -12,20 +17,25 @@ namespace BardicBytes.EventVars.Editor
             string[] movedAssets,
             string[] movedFromAssetPaths)
         {
-            foreach (string assetPath in importedAssets)
+            List<EventVar> refreshTargets = new List<EventVar>();
+
+            for (int i = 0; i < importedAssets.Length; i++)
             {
-                // Load the asset at the path
+                string assetPath = importedAssets[i];
                 ScriptableObject asset = AssetDatabase.LoadAssetAtPath<ScriptableObject>(assetPath);
 
-                // Check if the asset is of type EventVar
                 if (asset is EventVar eventVar)
                 {
-                    // Call the RefreshGUID method on the EventVar instance
-                    eventVar.RefreshGUID();
-                    // Save the asset to ensure the new GUID is stored
-                    EditorUtility.SetDirty(eventVar);
-                    AssetDatabase.SaveAssets();
+                    refreshTargets.Add(eventVar);
                 }
+            }
+
+            for(int i = 0;i < refreshTargets.Count; i++)
+            {
+                var eventVar = refreshTargets[i];
+                eventVar.RefreshGUID();
+                EditorUtility.SetDirty(eventVar);
+                AssetDatabase.SaveAssets();
             }
         }
     }

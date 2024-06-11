@@ -19,6 +19,7 @@ namespace BardicBytes.EventVars
 
 #endif
 
+        // Implementation of IMinMax<float>
         [field:Header("MinMax")]
         [field: SerializeField]
         public bool HasMin { get; protected set; } = false;
@@ -43,6 +44,7 @@ namespace BardicBytes.EventVars
             else return val;
         }
 
+        // override Raise and clamp the value
         public override void Raise(float data) => base.Raise(MinMaxClamp(data));
 
         public override float GetTypedValue(EventVarInstanceData bc) => bc.FloatValue;
