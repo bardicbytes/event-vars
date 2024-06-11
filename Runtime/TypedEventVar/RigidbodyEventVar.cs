@@ -2,7 +2,7 @@
 
 using UnityEngine;
 
-namespace BardicBytes.EventVars.Samples
+namespace BardicBytes.EventVars
 { 
     [CreateAssetMenu(menuName = "BardicBytes/EventVars/Rigidbody EventVar")]
     public class RigidbodyEventVar : EventVar<Rigidbody>

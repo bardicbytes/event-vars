@@ -2,6 +2,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [0.2.8] - 2024-06-11
+- Added "initilizer" component and some typed subclasses for gameObject and Transform
+- Moved Typed event var and listener scripts from samples to the main package
+- added much more documentation and comments across the board
+
 ## [0.2.7] - 2024-06-05
 - Fixed design/implementation issue with the event var fields relationship to the instancer
 

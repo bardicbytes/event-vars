@@ -16,17 +16,14 @@ MonoBehaviour:
   untypedEvent:
     m_PersistentCalls:
       m_Calls: []
-  typedEvent:
-    m_PersistentCalls:
-      m_Calls: []
   debugLogValueChange: 0
   <RequireInstancing>k__BackingField: 0
   resetValueOnDatalessRaise: 1
   abortRaiseForIdenticalData: 0
   requireData: 0
-  invokeNewListeners: 0
   <InitialValue>k__BackingField: {x: 0, y: 0, z: 0}
-  hasMin: 0
+  <HasMin>k__BackingField: 0
+  <HasMax>k__BackingField: 0
   <MinValue>k__BackingField: {x: 0, y: 0, z: 0}
   hasMax: 0
   <MaxValue>k__BackingField: {x: 0, y: 0, z: 0}

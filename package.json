@@ -27,12 +27,6 @@
           "path": "Samples~/Demo"
       },
       {
-        "displayName": "Typed EventVars",
-        "description": "examples of EventVars for less common types",
-        "path": "Samples~/TypedEventVars"
-      }  
-      ,
-      {
         "displayName": "Audio EventVars",
         "description": "An EventVar based SFX system",
         "path": "Samples~/AudioEventVars"
