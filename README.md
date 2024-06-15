@@ -1,5 +1,4 @@
 # EventVars for Unity
-last updated June 7, 2024
 ## Overview
 **EventVars** is a package for Unity. This package enables a robust asset based event-driven architecture.
 

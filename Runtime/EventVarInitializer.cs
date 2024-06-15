@@ -10,14 +10,14 @@ namespace BardicBytes.EventVars
     public abstract class EventVarInitializer : MonoBehaviour { }
 
     public abstract class EventVarInitializer<TEventVarType, TInputType> : EventVarInitializer 
-        where TEventVarType : EventVar, IEventVarInput<TInputType>
+        where TEventVarType : EventAsset
     {
-        [SerializeField] protected TEventVarType target = default;
-        [SerializeField] protected TInputType initialValue = default;
+        [SerializeField] protected TEventVarType _target = default;
+        [SerializeField] protected TInputType _initialValue = default;
 
-        private void Awake()
-        {
-            target.Raise(initialValue);
-        }
+        private void Awake() => RaiseEventVar();
+
+        protected abstract void RaiseEventVar();
+
     }
 }

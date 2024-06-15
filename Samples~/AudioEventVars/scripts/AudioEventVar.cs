@@ -12,7 +12,7 @@ namespace BardicBytes.EventVars.AudioEventVar
     /// through the Raise(AudioEventData) method
     /// </summary>
     [CreateAssetMenu(menuName = "BardicBytes/EventVars/Audio EventVar")]
-    public class AudioEventVar : EventVar<AudioEventConfig, AudioEventPlaybackConfig, AudioEventVar>
+    public class AudioEventVar : BaseTypedEventVar<AudioEventConfig, AudioEventPlaybackConfig, AudioEventVar>
     {
         [Tooltip("when true, a given clip will only be played ")]
         [SerializeField]

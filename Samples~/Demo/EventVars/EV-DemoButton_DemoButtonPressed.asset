@@ -13,12 +13,15 @@ MonoBehaviour:
   m_Name: EV-DemoButton_DemoButtonPressed
   m_EditorClassIdentifier: 
   <GUID>k__BackingField: 30087635f314e0648910fb647cfaa8d1
-  untypedEvent:
+  _untypedEvent:
     m_PersistentCalls:
       m_Calls: []
-  debugLogValueChange: 0
+  _typedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  _debugLogValueChange: 0
   <RequireInstancing>k__BackingField: 0
-  resetValueOnDatalessRaise: 1
-  abortRaiseForIdenticalData: 0
-  requireData: 0
+  _resetValueOnDatalessRaise: 1
+  _abortRaiseForIdenticalData: 0
+  _requireData: 0
   <InitialValue>k__BackingField: {fileID: 0}

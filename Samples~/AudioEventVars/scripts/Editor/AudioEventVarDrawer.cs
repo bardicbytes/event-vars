@@ -48,7 +48,7 @@ namespace BardicBytes.EventVars.AudioEventVar.Editor
                 //    position.y += position.height + EditorGUIUtility.standardVerticalSpacing;
                 //}
 
-                var propertyField = targetSerializedObject.FindProperty(StringFormatting.GetBackingFieldName("InitialValue"));
+                var propertyField = targetSerializedObject.FindProperty(StringUtility.GetBackingFieldName("InitialValue"));
 
                 //position.height = EditorGUIUtility.singleLineHeight * 5;
                 EditorGUI.PropertyField(position, propertyField, true);

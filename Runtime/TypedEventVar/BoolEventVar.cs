@@ -6,7 +6,7 @@ namespace BardicBytes.EventVars
 {
     [CreateAssetMenu(menuName = "BardicBytes/EventVars/Bool")]
 
-    public class BoolEventVar : EventVar<bool> 
+    public class BoolEventVar : TypedEventVar<bool> 
     {
         public void Toggle() => Raise(!Value);
 

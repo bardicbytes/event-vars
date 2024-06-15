@@ -11,7 +11,7 @@ namespace BardicBytes.EventVars.Editor
         // Draw the property inside the given rect
         public override void OnGUI(Rect position, SerializedProperty topProp, GUIContent label)
         {
-            var srcProp = topProp.FindPropertyRelative(StringFormatting.GetBackingFieldName("Source"));
+            var srcProp = topProp.FindPropertyRelative(StringUtility.GetBackingFieldName("Source"));
             
             if(srcProp == null)
             {
@@ -34,7 +34,7 @@ namespace BardicBytes.EventVars.Editor
                 r2 = new Rect(position.x + r1.width + 5, position.y, position.width - r1.width - 5, position.height);
                 EditorGUI.LabelField(r1, "Select an EventVar");
             }
-            else if(srcProp.objectReferenceValue is EventVar ev)
+            else if(srcProp.objectReferenceValue is EventAsset ev)
             {
                 r1 = new Rect(position.x, position.y, position.width - 150, position.height);
                 r2 = new Rect(position.x + r1.width + 5, position.y, position.width - r1.width - 5, position.height);
@@ -65,44 +65,31 @@ namespace BardicBytes.EventVars.Editor
         public bool PropField(Rect position, SerializedProperty dataProperty)
         {
             EventVarInstanceData data = dataProperty.boxedValue as EventVarInstanceData;
-            
-            if (!data.Source.ThisEventVarTypeHasValue) return false;
+            string selector;
+            string objectName;
 
-            var selector = data.Source.StoredValueType.FullName;
+            if (data.Source is IEventVar eventVar)
+            {
+                selector = eventVar.StoredValueType.FullName;
+                objectName = eventVar.StoredValueType.Name;
+            }
+            else
+            {
+                return false;
+            }
 
             bool changed = false;
             bool drawn = false;
 
-            if (selector == typeof(string).FullName && DrawPropField("StringValue"))
-            {
-                var p = FindPropRel("StringValue");
-                if (p != null) data.StringValue = p.stringValue;
-            }
-            else if (selector == typeof(int).FullName && DrawPropField("IntValue"))
-            {
-                var p = FindPropRel("IntValue");
-                if (p != null) data.IntValue = p.intValue;
-            }
-            else if (selector == typeof(bool).FullName && DrawPropField("BoolValue"))
-            {
-                var p = FindPropRel("BoolValue");
-                if (p != null) data.BoolValue = p.boolValue;
-            }
-            else if (selector == typeof(float).FullName && DrawPropField("FloatValue"))
-            {
-                var p = FindPropRel("FloatValue");
-                if (p != null) data.FloatValue = p.floatValue;
-            }
-            else if (selector == typeof(Vector3).FullName && DrawPropField("Vector3Value"))
-            {
-                var p = FindPropRel("Vector3Value");
-                if (p != null) data.Vector3Value = p.vector3Value;
-            }
-            else if (selector == typeof(Vector2Int).FullName && DrawPropField("Vector2IntValue"))
-            {
-                var p = FindPropRel("Vector2IntValue");
-                if (p != null) data.Vector2IntValue = p.vector2IntValue;
-            }
+            SerializedProperty foundProperty = null;
+
+            if (selector == typeof(string).FullName && DrawPropField("StringValue", out foundProperty) && foundProperty != null) data.StringValue = foundProperty.stringValue;
+            else if (selector == typeof(int).FullName && DrawPropField("IntValue", out foundProperty) && foundProperty != null) data.IntValue = foundProperty.intValue;
+            else if (selector == typeof(bool).FullName && DrawPropField("BoolValue", out foundProperty) && foundProperty != null) data.BoolValue = foundProperty.boolValue;
+            else if (selector == typeof(float).FullName && DrawPropField("FloatValue", out foundProperty) && foundProperty != null) data.FloatValue = foundProperty.floatValue;
+            else if (selector == typeof(Vector3).FullName && DrawPropField("Vector3Value", out foundProperty) && foundProperty != null) data.Vector3Value = foundProperty.vector3Value;
+            else if (selector == typeof(Vector2Int).FullName && DrawPropField("Vector2IntValue", out foundProperty) && foundProperty != null) data.Vector2IntValue = foundProperty.vector2IntValue;
+            else if (selector == typeof(Quaternion).FullName && DrawPropField("QuaternionValue", out foundProperty) && foundProperty != null) data.QuaternionValue = foundProperty.quaternionValue;
 
             if (changed) return changed;
 
@@ -113,31 +100,30 @@ namespace BardicBytes.EventVars.Editor
                 if (EditorGUI.EndChangeCheck())
                 {
                     changed = true;
-                    var p = FindPropRel("UnityObjectValue");
-                    if (p != null) data.StringValue = p.stringValue;
+                    foundProperty = FindPropRel("UnityObjectValue");
+                    if (foundProperty != null) data.StringValue = foundProperty.stringValue;
                 }
                 return changed;
             }
-
-            if (selector == typeof(System.Object).FullName)
+            else if (selector == typeof(System.Object).FullName)
             {
                 EditorGUI.BeginChangeCheck();
                 EditorGUI.PropertyField(position, FindPropRel("SystemObjectValue"), true);
                 if (EditorGUI.EndChangeCheck())
                 {
                     changed = true;
-                    var p = FindPropRel("SystemObjectValue");
-                    if (p != null) data.StringValue = p.stringValue;
+                    foundProperty = FindPropRel("SystemObjectValue");
+                    if (foundProperty != null) data.StringValue = foundProperty.stringValue;
                 }
                 EditorGUI.EndChangeCheck();
                 return changed;
             }
 
-            if(!drawn) EditorGUI.LabelField(position, "No Instancing Available for " + data.Source.StoredValueType.Name);
+            if(!drawn) EditorGUI.LabelField(position, "No Instancing Available for " + objectName);
 
             return false;
 
-            bool DrawPropField(string propName)
+            bool DrawPropField(string propName, out SerializedProperty property)
             {
                 EditorGUI.BeginChangeCheck();
                 var bp = FindPropRel(propName);
@@ -146,13 +132,15 @@ namespace BardicBytes.EventVars.Editor
                 changed = true;
                 var c = EditorGUI.EndChangeCheck();
                 changed = c;
+
+                property = bp;
                 return c;
             }
 
             SerializedProperty FindPropRel(string propName)
             {
                 drawn = true;
-                var s = StringFormatting.GetBackingFieldName(propName);
+                var s = StringUtility.GetBackingFieldName(propName);
                 SerializedProperty sp = dataProperty.Copy();
                 if (sp.name == s) return sp;
                 while (sp.Next(true))

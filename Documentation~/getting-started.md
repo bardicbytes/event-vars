@@ -8,9 +8,10 @@
 
 [Samples](samples.md)
 
-## Duplicating EventVar assets
-
-The EventVar system caches the GUID Unity's asset database. If you duplicate an EventVar, the new asset will have the same GUID cached. There is a couple ways to fix this easy and automatically, but my laptop is running out of power and I need to save. good luck!
+## Use Cases
+### EventVars as configuration assets
+- Use the initial value field on EventVars to configure the EventVar in compile/build time.
+- Raising the event is optional. Access BaseTypedEventVar.Value instead
 
 ## EventVarInstancer
 [EventVarInstancer code documentation](classes/EventVarInstancer.md)

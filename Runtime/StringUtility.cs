@@ -1,7 +1,7 @@
 
 namespace BardicBytes.EventVars
 {
-    public static class StringFormatting
+    public static class StringUtility
     {
         const string backingFieldSuffix = "k__BackingField";
         /// <summary>

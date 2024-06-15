@@ -5,7 +5,7 @@ using UnityEngine;
 namespace BardicBytes.EventVars
 {
     [CreateAssetMenu(menuName = "BardicBytes/EventVars/Vector2Int")]
-    public class Vector2IntEventVar : EventVar<int>, IMinMax<Vector2Int>
+    public class Vector2IntEventVar : TypedEventVar<int>, IMinMax<Vector2Int>
     {
         [field: Header("MinMax")]
         [field: SerializeField]

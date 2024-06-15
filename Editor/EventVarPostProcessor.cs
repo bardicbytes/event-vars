@@ -17,14 +17,14 @@ namespace BardicBytes.EventVars.Editor
             string[] movedAssets,
             string[] movedFromAssetPaths)
         {
-            List<EventVar> refreshTargets = new List<EventVar>();
+            List<EventAsset> refreshTargets = new List<EventAsset>();
 
             for (int i = 0; i < importedAssets.Length; i++)
             {
                 string assetPath = importedAssets[i];
                 ScriptableObject asset = AssetDatabase.LoadAssetAtPath<ScriptableObject>(assetPath);
 
-                if (asset is EventVar eventVar)
+                if (asset is EventAsset eventVar)
                 {
                     refreshTargets.Add(eventVar);
                 }

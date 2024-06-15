@@ -12,9 +12,29 @@ namespace BardicBytes.EventVars
     [CreateAssetMenu(menuName = "BardicBytes/EventVar Collection")]
     public class EventVarCollection : ScriptableObject
     {
+
+#if UNITY_EDITOR
+        [ContextMenu("Export to File...")]
+        public void ExportToFile()
+        {
+            var path = EditorUtility.SaveFilePanel("Save EventVarCollection to JSON file", "", name + ".json", "json");
+            if (string.IsNullOrEmpty(path)) return;
+            ExportToJson(path);
+        }
+
+        [ContextMenu("Import From File...")]
+        public void ImportFromFile()
+        {
+            var path = EditorUtility.OpenFilePanel("Open a JSON file", "", "json");
+            if (string.IsNullOrEmpty(path)) return;
+            ImportFromJson(path);
+        }
+#endif
+
         // Serialized / Inspector Fields
         [SerializeField]
-        private List<EventVar> eventVars = default;
+        private List<BaseEventVar> eventVars = default;
+
         [SerializeField]
         [HideInInspector]
         private List<int> guidHash = default;
@@ -29,9 +49,9 @@ namespace BardicBytes.EventVars
         private bool useFolders = false;
 
         // accessors
-        public T Get<T>(int index) where T : EventVar => (T)eventVars[index];
+        public T Get<T>(int index) where T : BaseEventVar => (T)eventVars[index];
 
-        public EventVar this[int index] => eventVars[index];
+        public BaseEventVar this[int index] => eventVars[index];
         public int Count => eventVars.Count;
 
         private void OnValidate()
@@ -58,11 +78,9 @@ namespace BardicBytes.EventVars
         /// <param name="data">serializable eventVar data</param>
         public void Import(SerializableEventVarCollection data)
         {
-            if(data == null)
-            {
-                Debug.LogError("Error Importing");
-            }
-
+#if DEBUG
+            if(Debug.isDebugBuild) Debug.Assert(data != null, "Import Error, data is null");
+#endif
             ImportList(data.floatEventVars);
             ImportList(data.boolEventVars);
             ImportList(data.intEventVars);
@@ -82,15 +100,17 @@ namespace BardicBytes.EventVars
             }
         }
 
-
         public SerializableEventVarCollection Export() => new SerializableEventVarCollection(eventVars);
 
         [ContextMenu("Log Export")]
         public void LogExport() => Debug.Log(JsonUtility.ToJson(Export(), true));
 
-
         public void ExportToJson(string path) => File.WriteAllText(path,JsonUtility.ToJson(Export(), ExportPretty));
 
+        /// <summary>
+        /// updates the values of the eventVars without raising the events.
+        /// </summary>
+        /// <param name="path">the full path of the json file</param>
         public void ImportFromJson(string path) => Import(DeserializeJsonAtPath(path));
 
         /// <summary>
@@ -101,6 +121,7 @@ namespace BardicBytes.EventVars
         private static SerializableEventVarCollection DeserializeJsonAtPath(string path)
         {
             var text = File.ReadAllText(path);
+
             try
             {
                 var data = JsonUtility.FromJson<SerializableEventVarCollection>(text);
@@ -139,35 +160,5 @@ namespace BardicBytes.EventVars
             var f = useFolders ? ($"{filename}/") : "";
             return $"{Application.persistentDataPath}/{saveFolderName}/{f}{filename}.json";
         }
-
-
-#if UNITY_EDITOR
-        [ContextMenu("Export to File...")]
-        public void ExportToFile()
-        {
-            var path = EditorUtility.SaveFilePanel(
-                "Save EventVarCollection to JSON file",
-                "",
-                name + ".json",
-                "json");
-
-            if (string.IsNullOrEmpty(path)) return;
-
-            ExportToJson(path);
-        }
-
-        [ContextMenu("Import From File...")]
-        public void ImportFromFile()
-        {
-            var path = EditorUtility.OpenFilePanel(
-                "Open a JSON file",
-                "",
-                "json");
-
-            if (string.IsNullOrEmpty(path)) return;
-
-            ImportFromJson(path);
-        }
-#endif
     }
 }

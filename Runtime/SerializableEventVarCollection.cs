@@ -29,7 +29,7 @@ namespace BardicBytes.EventVars
         /// Constructor that initializes the collections based on provided event variables.
         /// </summary>
         /// <param name="eventVars">List of event variables to initialize from.</param>
-        public SerializableEventVarCollection(List<EventVar> eventVars)
+        public SerializableEventVarCollection(List<BaseEventVar> eventVars)
         {
             // Initialize collections for different event variable data types
             stringEventVars = new List<SerializableEventVarData<string>>();
