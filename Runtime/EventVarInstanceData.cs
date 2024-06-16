@@ -79,7 +79,7 @@ namespace BardicBytes.EventVars
         /// <param name="owner"></param>
         public void RuntimeInitialize(EventVarInstancer owner)
         {
-            Debug.Assert(Source != null, "source was not set before runtime initialization of event var instance data "+owner.name, owner);
+            Debug.Assert(Source != null, "source was not set before runtime initialization of event var instance data " + owner.name, owner);
 
             _eventVarClone = Source.GetCreateInstance<BaseEventVar>(owner);
             EventVarInstance.SetInitialValue(this);

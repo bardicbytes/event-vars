@@ -16,7 +16,7 @@ public class PositionHandler : MonoBehaviour
     {
         positionEvent.AddListener(HandlePositionChanged);
     }
-    
+
     private void OnDisable()
     {
         positionEvent.RemoveListener(HandlePositionChanged);
@@ -25,6 +25,6 @@ public class PositionHandler : MonoBehaviour
     private void HandlePositionChanged(Vector3 arg0)
     {
         outputText.text = arg0.ToString();
-        Debug.DrawRay(arg0, Vector3.up, Color.magenta/2, 5);
+        Debug.DrawRay(arg0, Vector3.up, Color.magenta / 2, 5);
     }
 }

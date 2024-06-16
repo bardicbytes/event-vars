@@ -9,7 +9,7 @@ namespace BardicBytes.EventVars
     /// </summary>
     public abstract class EventVarInitializer : MonoBehaviour { }
 
-    public abstract class EventVarInitializer<TEventVarType, TInputType> : EventVarInitializer 
+    public abstract class EventVarInitializer<TEventVarType, TInputType> : EventVarInitializer
         where TEventVarType : EventAsset
     {
         [SerializeField] protected TEventVarType _target = default;

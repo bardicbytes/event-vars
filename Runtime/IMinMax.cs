@@ -8,9 +8,9 @@ namespace BardicBytes.EventVars
     /// <typeparam name="T">a struct, ideally a numeric struct</typeparam>
     public interface IMinMax<T> where T : struct
     {
-        public bool HasMin { get;}
-        public T MinValue { get;}
-        public bool HasMax { get;}
+        public bool HasMin { get; }
+        public T MinValue { get; }
+        public bool HasMax { get; }
         public T MaxValue { get; }
 
         T MinMaxClamp(T value);

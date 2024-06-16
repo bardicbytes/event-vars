@@ -1,6 +1,4 @@
-
-using System;
-using UnityEditor.Build;
+//alex@bardicbytes.com
 
 namespace BardicBytes.EventVars
 {
@@ -12,7 +10,7 @@ namespace BardicBytes.EventVars
     {
         public System.Type InputValueType => typeof(TInput);
 
-        public SerializableEventVarData<TInput> GetSerializableData();
+        public SerializableEventVarData<TInput> CreateSerializableData();
 
         public TInput TypedStoredValue { get; }
 

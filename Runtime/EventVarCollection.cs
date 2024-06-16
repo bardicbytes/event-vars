@@ -79,7 +79,7 @@ namespace BardicBytes.EventVars
         public void Import(SerializableEventVarCollection data)
         {
 #if DEBUG
-            if(Debug.isDebugBuild) Debug.Assert(data != null, "Import Error, data is null");
+            if (Debug.isDebugBuild) Debug.Assert(data != null, "Import Error, data is null");
 #endif
             ImportList(data.floatEventVars);
             ImportList(data.boolEventVars);
@@ -105,7 +105,7 @@ namespace BardicBytes.EventVars
         [ContextMenu("Log Export")]
         public void LogExport() => Debug.Log(JsonUtility.ToJson(Export(), true));
 
-        public void ExportToJson(string path) => File.WriteAllText(path,JsonUtility.ToJson(Export(), ExportPretty));
+        public void ExportToJson(string path) => File.WriteAllText(path, JsonUtility.ToJson(Export(), ExportPretty));
 
         /// <summary>
         /// updates the values of the eventVars without raising the events.

@@ -33,7 +33,7 @@ namespace BardicBytes.EventVars
         /// This property provides the array of propertyNames that the custom editor will draw in the inspector window. 
         /// Override this property and return different member names to customize the editor.
         /// </summary>
-        public virtual string[] EditorProperties => new string[] { "untypedEvent" };
+        public virtual string[] EditorProperties => new string[] { "_untypedEvent" };
         /// <summary>
         /// Similar to EditorProperties, but these properties will be drawn within a foldout
         /// </summary>
@@ -43,7 +43,7 @@ namespace BardicBytes.EventVars
         {
             Reset_first_EventVar();
 
-            if (string.IsNullOrEmpty(GUID)) RefreshGUID();
+            if (string.IsNullOrEmpty(GUID)) RefreshGUID_EditorOnly();
 
             Reset_last_EventVar();
         }
@@ -54,7 +54,7 @@ namespace BardicBytes.EventVars
 
             _lastRaiseTime = 0;
             _runtimeListenerCount = 0;
-            if (string.IsNullOrEmpty(GUID)) RefreshGUID();
+            if (string.IsNullOrEmpty(GUID)) RefreshGUID_EditorOnly();
 
             OnValidate_last_EventVar();
         }
@@ -69,7 +69,7 @@ namespace BardicBytes.EventVars
         /// If an eventVar is copied, the cached GUID won't automatically
         /// </summary>
         [ContextMenu("RefreshGUID")]
-        public void RefreshGUID()
+        public void RefreshGUID_EditorOnly()
         {
             var p = AssetDatabase.GetAssetPath(this);
             GUID = AssetDatabase.AssetPathToGUID(p);

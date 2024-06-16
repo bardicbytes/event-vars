@@ -9,7 +9,7 @@ namespace BardicBytes.EventVars
     public abstract class TypedEventVar<TInput> :
         BaseTypedEventVar<TInput, TInput, TypedEventVar<TInput>>,
         IEventVar, IEventVarInput<TInput>, IEventVarOutput<TInput>
-    { 
+    {
         public override TInput Evaluate(TInput value) => value;
     }
 }

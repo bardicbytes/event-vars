@@ -50,7 +50,7 @@ namespace BardicBytes.EventVars
 
             _lastRaiseTime = 0;
             _runtimeListenerCount = 0;
-            if (string.IsNullOrEmpty(GUID)) RefreshGUID();
+            if (string.IsNullOrEmpty(GUID)) RefreshGUID_EditorOnly();
             base.OnValidate_last_EventVar();
         }
 #endif
@@ -131,11 +131,11 @@ namespace BardicBytes.EventVars
         /// <exception cref="ArgumentException">The argument was not the correct type.</exception>
         public override void SetStoredValue(object newStoredValue)
         {
-            if(newStoredValue == null || newStoredValue == default)
+            if (newStoredValue == null || newStoredValue == default)
             {
                 TypedStoredValue = default;
             }
-            else if(newStoredValue is TInput typedValue)
+            else if (newStoredValue is TInput typedValue)
             {
                 this.TypedStoredValue = typedValue;
             }
@@ -259,7 +259,7 @@ namespace BardicBytes.EventVars
 
         public override void SetInitialValue(EventVarInstanceData data) => SetInitialValue(GetTypedValue(data));
 
-        public SerializableEventVarData<TInput> GetSerializableData() => new SerializableEventVarData<TInput>(this);
+        public SerializableEventVarData<TInput> CreateSerializableData() => new SerializableEventVarData<TInput>(this);
 
         // fix these:
 

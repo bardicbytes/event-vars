@@ -12,7 +12,7 @@ namespace BardicBytes.EventVars
         public bool HasMin { get; protected set; } = false;
         [field: SerializeField]
         public bool HasMax { get; protected set; } = false;
-        
+
         [field: SerializeField]
         public Vector2Int MinValue { get; protected set; } = Vector2Int.zero;
         [field: SerializeField]

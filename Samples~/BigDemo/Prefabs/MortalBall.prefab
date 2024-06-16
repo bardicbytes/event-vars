@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 7464154424949568487}
   - component: {fileID: 8225677972679653216}
   - component: {fileID: 4647524427792816940}
+  - component: {fileID: 3142686268388185162}
   m_Layer: 0
   m_Name: MortalBall
   m_TagString: Untagged
@@ -150,21 +151,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _instancer: {fileID: 8225677972679653216}
   _healthEventVar: {fileID: 11400000, guid: 23c201819a6da484e808f3bfcd40baad, type: 2}
+  destroyOnDeath: 1
   <OnMinHealth>k__BackingField:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2377007087311596313}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &8225677972679653216
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -177,18 +167,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c27beb84d372b1f429637b8dffdef873, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  eventVarInstances:
-  - editorName: 
-    <Source>k__BackingField: {fileID: 11400000, guid: 23c201819a6da484e808f3bfcd40baad,
-      type: 2}
+  _eventVarInstances:
+  - _editorName: 
     <StringValue>k__BackingField: 
     <IntValue>k__BackingField: 0
-    <FloatValue>k__BackingField: 100
+    <FloatValue>k__BackingField: 10
     <BoolValue>k__BackingField: 0
     <Vector3Value>k__BackingField: {x: 0, y: 0, z: 0}
     <Vector2IntValue>k__BackingField: {x: 0, y: 0}
     <Vector2Value>k__BackingField: {x: 0, y: 0}
+    <QuaternionValue>k__BackingField: {x: 0, y: 0, z: 0, w: 0}
     <UnityObjectValue>k__BackingField: {fileID: 0}
+    <Source>k__BackingField: {fileID: 11400000, guid: 23c201819a6da484e808f3bfcd40baad,
+      type: 2}
+  - _editorName: 
+    <StringValue>k__BackingField: 
+    <IntValue>k__BackingField: 0
+    <FloatValue>k__BackingField: 5
+    <BoolValue>k__BackingField: 0
+    <Vector3Value>k__BackingField: {x: 0, y: 0, z: 0}
+    <Vector2IntValue>k__BackingField: {x: 0, y: 0}
+    <Vector2Value>k__BackingField: {x: 0, y: 0}
+    <QuaternionValue>k__BackingField: {x: 0, y: 0, z: 0, w: 0}
+    <UnityObjectValue>k__BackingField: {fileID: 0}
+    <Source>k__BackingField: {fileID: 11400000, guid: 05d5ce3603c140d479f8160432a103fd,
+      type: 2}
 --- !u!114 &4647524427792816940
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -204,3 +207,17 @@ MonoBehaviour:
   body: {fileID: 1301967388780124155}
   seconds: 3
   force: 2
+--- !u!114 &3142686268388185162
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2377007087311596313}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbabadd542ac72c4d85ff750c4648a2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _target: {fileID: 11400000, guid: 6b69b1e9cd9d489418e19f3ae280cf14, type: 2}
+  _initialValue: {fileID: 8225677972679653216}

@@ -23,17 +23,17 @@
     "samples": [
       {
           "displayName": "Small Demos",
-          "description": "a simple demonstration of all features",
+          "description": "a simple demonstration of all features in multiple scenes",
           "path": "Samples~/SmallDemos"
       },
       {
         "displayName": "Big Demo",
-        "description": "a more wholistic and complex demonstration of package features",
-        "path": "Samples~/AudioEventVars"
+        "description": "a wholistic demonstration of package features in a single scene",
+        "path": "Samples~/Big Demo"
       },
       {
         "displayName": "Audio EventVars",
-        "description": "An EventVar based SFX system",
+        "description": "An EventVar based SFX system including clip randomization, pitch shifting, audio source pooling, and more",
         "path": "Samples~/AudioEventVars"
       }      
     ]

@@ -9,6 +9,7 @@ public class MortalityBehaviour : MonoBehaviour
 {
     [SerializeField] private EventVarInstancer _instancer;
     [SerializeField] private FloatEventVar _healthEventVar;
+    [SerializeField] private bool destroyOnDeath = true;
 
     [field: SerializeField] public UnityEvent<MortalityBehaviour> OnMinHealth { get; private set; } = default;
 
@@ -26,12 +27,12 @@ public class MortalityBehaviour : MonoBehaviour
 
     private void HandleHealthChanged(float newHealth)
     {
-        if(Mathf.Approximately(newHealth, _healthInstance.MinValue))
-        {
-            // raising without an argument will reset the value to its initial
-            _healthInstance.Raise();
-            OnMinHealth.Invoke(this);
-        }
+        if (!Mathf.Approximately(newHealth, _healthInstance.MinValue)) return;
+
+        // raising without an argument will reset the value to its initial
+        _healthInstance.Raise();
+        OnMinHealth.Invoke(this);
+        if (destroyOnDeath) Destroy(gameObject);
     }
 
 }

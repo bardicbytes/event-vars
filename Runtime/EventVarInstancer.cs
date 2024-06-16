@@ -75,7 +75,7 @@ namespace BardicBytes.EventVars
             BaseEventVar ev = null;
             if (!HasInstance(eventVarAssetRef))
             {
-                Debug.LogWarning("no instance found, Check with HasInstance first.");
+                Debug.LogWarning($"no instance of {eventVarAssetRef.name} found on {name}, Check with HasInstance first.");
                 return ev;
             }
 
@@ -119,7 +119,7 @@ namespace BardicBytes.EventVars
         {
             if (!Application.isPlaying)
             {
-                for(int i = 0;i < _eventVarInstances.Count;i++)
+                for (int i = 0; i < _eventVarInstances.Count; i++)
                 {
                     if (_eventVarInstances[i].Source == ev) return true;
                 }

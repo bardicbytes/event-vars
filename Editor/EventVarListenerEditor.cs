@@ -2,18 +2,18 @@ using UnityEditor;
 
 namespace BardicBytes.EventVars.Editor
 {
-    [CustomEditor(typeof(EventVarListener), true), CanEditMultipleObjects]
+    [CustomEditor(typeof(EventAssetListener), true), CanEditMultipleObjects]
     public class EventVarListenerEditor : UnityEditor.Editor
     {
-        private bool foldout = false;
+        private bool _foldout = false;
 
         public override void OnInspectorGUI()
         {
-            var targetListener = (EventVarListener)target;
+            var targetListener = (EventAssetListener)target;
             EditorHelper.DrawPropertiesByName(serializedObject, targetListener.EditorProperties);
 
-            foldout = EditorGUILayout.Foldout(foldout, "Default Inspector", true);
-            if (foldout) DrawDefaultInspector();
+            _foldout = EditorGUILayout.Foldout(_foldout, "Default Inspector", true);
+            if (_foldout) DrawDefaultInspector();
         }
     }
 }

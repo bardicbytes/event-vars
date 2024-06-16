@@ -1,3 +1,5 @@
+//alex@bardicbytes.com
+
 namespace BardicBytes.EventVars
 {
     public interface IEventVar

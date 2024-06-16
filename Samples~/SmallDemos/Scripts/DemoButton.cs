@@ -26,7 +26,7 @@ namespace BardicBytes.EventVarsDemo
         private void OnValidate()
         {
             if (Text == null) Text = GetComponentInChildren<TextMeshProUGUI>();
-            if(Button == null) Button = GetComponentInChildren<Button>();
+            if (Button == null) Button = GetComponentInChildren<Button>();
         }
 
         private void OnApplicationQuit()

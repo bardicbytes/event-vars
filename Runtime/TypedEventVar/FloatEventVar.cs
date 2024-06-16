@@ -20,8 +20,8 @@ namespace BardicBytes.EventVars
 #endif
 
         // Implementation of IMinMax<float>
-        [field:Header("MinMax")]
-        [field:Tooltip("When true, the argument will be change to be greater than or equal to MinValue")]
+        [field: Header("MinMax")]
+        [field: Tooltip("When true, the argument will be change to be greater than or equal to MinValue")]
         [field: SerializeField]
         public bool HasMin { get; protected set; } = false;
 

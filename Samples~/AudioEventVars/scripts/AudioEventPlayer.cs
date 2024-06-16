@@ -47,7 +47,7 @@ namespace BardicBytes.EventVars.AudioEventVar
 
         private void Awake()
         {
-            if(_audioSourceTemplate == null)
+            if (_audioSourceTemplate == null)
             {
                 _audioSourceTemplate = GetComponentInChildren<AudioSource>();
             }
@@ -63,7 +63,7 @@ namespace BardicBytes.EventVars.AudioEventVar
 
             _pool = new Queue<AudioSource>();
             _playingSources = new List<AudioSource>();
-            
+
             _templateIsPrefab = PrefabUtility.GetPrefabAssetType(_audioSourceTemplate.gameObject) != PrefabAssetType.NotAPrefab;
 
             if (!_templateIsPrefab)
@@ -72,12 +72,12 @@ namespace BardicBytes.EventVars.AudioEventVar
                 _audioSourceTemplate.gameObject.SetActive(false);
             }
 
-            for(int i =0; i < _initialPoolSize; i++)
+            for (int i = 0; i < _initialPoolSize; i++)
             {
                 AddAudioSourceToPool();
             }
 
-            for (int i =0; i < _audioEvents.Count; i++)
+            for (int i = 0; i < _audioEvents.Count; i++)
             {
                 if (_audioEvents[i] == null) continue;
                 _audioEvents[i].AddListener(Play);
@@ -97,13 +97,13 @@ namespace BardicBytes.EventVars.AudioEventVar
         private AudioSource SpawnAudioSource()
         {
             if (_playingSources.Count >= _maxCount && _capacityMode == CapacityExceededMode.Ignore) return null;
-            if(_playingSources.Count >= _maxCount && _capacityMode == CapacityExceededMode.RecycleOldest)
+            if (_playingSources.Count >= _maxCount && _capacityMode == CapacityExceededMode.RecycleOldest)
             {
                 _playingSources[0].Stop();
                 return _playingSources[0];
             }
-            
-            if(_pool.Count <= 0 && _playingSources.Count < _maxCount) AddAudioSourceToPool();
+
+            if (_pool.Count <= 0 && _playingSources.Count < _maxCount) AddAudioSourceToPool();
 
             var s = _pool.Dequeue();
             _playingSources.Add(s);
@@ -114,7 +114,7 @@ namespace BardicBytes.EventVars.AudioEventVar
 
         private IEnumerator MonitorAudioSource(AudioSource audioSource, AudioEventPlaybackConfig config)
         {
-            while(audioSource.isActiveAndEnabled && audioSource.isPlaying)
+            while (audioSource.isActiveAndEnabled && audioSource.isPlaying)
             {
                 yield return null;
                 if (config.target != null && config.target.gameObject.activeInHierarchy)

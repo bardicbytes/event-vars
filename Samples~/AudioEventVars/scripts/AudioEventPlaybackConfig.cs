@@ -37,7 +37,7 @@ namespace BardicBytes.EventVars.AudioEventVar
             audioSource.bypassEffects = bypassEffects;
             audioSource.bypassListenerEffects = bypassListenerEffects;
 
-            if (target != null) 
+            if (target != null)
             {
                 audioSource.transform.position = target.position;
             }

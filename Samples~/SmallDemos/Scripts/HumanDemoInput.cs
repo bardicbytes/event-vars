@@ -10,7 +10,7 @@ namespace BardicBytes.EventVarsDemo
     {
         [SerializeField]
         private Vector3EventVar worldPositionInput = default;
-        [field:Space]
+        [field: Space]
         [field: SerializeField]
         public Camera Camera { get; set; }
         [SerializeField]
@@ -18,7 +18,7 @@ namespace BardicBytes.EventVarsDemo
 
         void Update()
         {
-            if(EventSystem.current.IsPointerOverGameObject()) return;
+            if (EventSystem.current.IsPointerOverGameObject()) return;
 
             Vector3 screenPos = Vector3.zero;
             bool didInput = false;
@@ -29,7 +29,7 @@ namespace BardicBytes.EventVarsDemo
                 screenPos = Input.mousePosition;
             }
 
-            if(Input.touchSupported && Input.touchCount > 0)
+            if (Input.touchSupported && Input.touchCount > 0)
             {
                 didInput = true;
                 screenPos = Input.touches[0].position;

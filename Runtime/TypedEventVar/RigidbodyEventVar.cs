@@ -3,7 +3,7 @@
 using UnityEngine;
 
 namespace BardicBytes.EventVars
-{ 
+{
     [CreateAssetMenu(menuName = "BardicBytes/EventVars/Rigidbody")]
     public class RigidbodyEventVar : TypedEventVar<Rigidbody>
     {

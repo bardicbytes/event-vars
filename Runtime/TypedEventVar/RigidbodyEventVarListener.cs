@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class RigidbodyEventVarListener : EventVarListener<Rigidbody>
 {
-    public class TransformEventVarInitializer : EventVarInitializer<RigidbodyEventVar, Rigidbody> 
+    public class TransformEventVarInitializer : EventVarInitializer<RigidbodyEventVar, Rigidbody>
     {
         protected override void RaiseEventVar() => _target.Raise(_initialValue);
     }

@@ -21,10 +21,10 @@ namespace BardicBytes.EventVars.Editor
                 EditorHelper.DrawPropertiesByName(serializedObject, targetListener.AdvancedEditorProperties);
             }
             EditorGUILayout.Space(25);
-            
+
             showDefaultInspector = EditorGUILayout.Foldout(showDefaultInspector, "Default Inspector", true);
             if (showDefaultInspector) DrawDefaultInspector();
-            
+
             serializedObject.ApplyModifiedProperties();
         }
     }

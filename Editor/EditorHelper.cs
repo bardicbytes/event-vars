@@ -18,6 +18,7 @@ namespace BardicBytes.EventVars.Editor
                 {
                     EditorGUILayout.HelpBox($"Property '{propertyName}' not found.", MessageType.Warning);
                 }
+                serializedObject.ApplyModifiedProperties();
             }
         }
     }

@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 59b2fa5e6f6e25b4ca53570fab7600a6, type: 3}
-  m_Name: Speed
+  m_Name: BigDemo-Health
   m_EditorClassIdentifier: 
-  <GUID>k__BackingField: 05d5ce3603c140d479f8160432a103fd
+  <GUID>k__BackingField: 23c201819a6da484e808f3bfcd40baad
   _untypedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -25,7 +25,7 @@ MonoBehaviour:
   _abortRaiseForIdenticalData: 0
   _requireData: 0
   <InitialValue>k__BackingField: 0
-  <HasMin>k__BackingField: 0
+  <HasMin>k__BackingField: 1
   <MinValue>k__BackingField: 0
-  <HasMax>k__BackingField: 0
-  <MaxValue>k__BackingField: 1
+  <HasMax>k__BackingField: 1
+  <MaxValue>k__BackingField: 100

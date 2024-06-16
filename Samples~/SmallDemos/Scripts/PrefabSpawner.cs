@@ -18,9 +18,9 @@ namespace BardicBytes.EventVarsDemo
 
         public void Spawn()
         {
-            for(int l = 0; l < loops; l++)
+            for (int l = 0; l < loops; l++)
             {
-                for(int i = 0; i < prefabs.Length; i++)
+                for (int i = 0; i < prefabs.Length; i++)
                 {
                     Instantiate(prefabs[i], parent).SetActive(true);
                 }

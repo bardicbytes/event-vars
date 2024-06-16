@@ -12,8 +12,8 @@ namespace BardicBytes.EventVars.Editor
         public override void OnGUI(Rect position, SerializedProperty topProp, GUIContent label)
         {
             var srcProp = topProp.FindPropertyRelative(StringUtility.GetBackingFieldName("Source"));
-            
-            if(srcProp == null)
+
+            if (srcProp == null)
             {
                 EditorGUI.LabelField(position, "srcProp is null");
                 return;
@@ -34,13 +34,13 @@ namespace BardicBytes.EventVars.Editor
                 r2 = new Rect(position.x + r1.width + 5, position.y, position.width - r1.width - 5, position.height);
                 EditorGUI.LabelField(r1, "Select an EventVar");
             }
-            else if(srcProp.objectReferenceValue is EventAsset ev)
+            else if (srcProp.objectReferenceValue is EventAsset ev)
             {
                 r1 = new Rect(position.x, position.y, position.width - 150, position.height);
                 r2 = new Rect(position.x + r1.width + 5, position.y, position.width - r1.width - 5, position.height);
 
                 bool changed = PropField(r1, topProp);
-                if(changed)
+                if (changed)
                 {
                     EditorUtility.SetDirty(topProp.serializedObject.targetObject);
                 }
@@ -119,7 +119,7 @@ namespace BardicBytes.EventVars.Editor
                 return changed;
             }
 
-            if(!drawn) EditorGUI.LabelField(position, "No Instancing Available for " + objectName);
+            if (!drawn) EditorGUI.LabelField(position, "No Instancing Available for " + objectName);
 
             return false;
 
@@ -127,7 +127,7 @@ namespace BardicBytes.EventVars.Editor
             {
                 EditorGUI.BeginChangeCheck();
                 var bp = FindPropRel(propName);
-                if (bp != null) EditorGUI.PropertyField(position, bp, new GUIContent(""),true);
+                if (bp != null) EditorGUI.PropertyField(position, bp, new GUIContent(""), true);
                 else EditorGUI.LabelField(position, propName + " null. " + dataProperty.propertyPath);
                 changed = true;
                 var c = EditorGUI.EndChangeCheck();
