@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b14367d7462a6f4faee43c72e63d66c, type: 3}
+  m_Name: EV-String_ButtonPressed
+  m_EditorClassIdentifier: 
+  <GUID>k__BackingField: 59724f5187d345a44b0bea9d8e151533
+  _untypedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  _typedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  _debugLogValueChange: 0
+  <RequireInstancing>k__BackingField: 0
+  _resetValueOnDatalessRaise: 1
+  _abortRaiseForIdenticalData: 0
+  _requireData: 0
+  <InitialValue>k__BackingField: 

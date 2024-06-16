@@ -3,14 +3,20 @@
 2. Reference this EventVar asset from a script or UnityEvent such as on a Unity UI Button component.
 3. Add listeners via script or use an EventVarListener component to react to the event being raised.
 
-
 [Overview](overview.md)
 
 [Samples](samples.md)
 
-## Duplicating EventVar assets
+## Use Cases
+### EventVars as configuration assets
+- Use the initial value field on EventVars to configure the EventVar in compile/build time.
+- Raising the event is optional. Access BaseTypedEventVar.Value instead
 
-The EventVar system caches the GUID Unity's asset database. If you duplicate an EventVar, the new asset will have the same GUID cached. There is a couple ways to fix this easy and automatically, but my laptop is running out of power and I need to save. good luck!
+### EventVars as change events and current value repository
+- create an event var asset to represent the value itself
+
+### EventAsset (event var without a value) 
+- can be used as a pure event without passing any data
 
 ## EventVarInstancer
 [EventVarInstancer code documentation](classes/EventVarInstancer.md)
@@ -28,7 +34,10 @@ The asset referenced still exists and maintains it's own values and events.
 
 ## EventVar Fields
 [EventVar Field code documentation](classes/EventVarInstancer.md)
+The Field class provides an alternative to choosing between regular inspector-configured fields and referencing an EventVar. By providing both an optional reference to an EventVar and a fallball value field, the decision to use an event var instead of a standard type can be left to designers.
 
 ```
-    public FloatEventVar.Field _moveSpeed;
+    [SerializeField] private FloatEventVar.Field _moveSpeed;
 ```
+
+In this example, _moveSpeed can be used like a standard float thanks to the Field type's implicit conversion operator. Meanwhile, in Unity's inspector, this Field could be configured to use a simple float value or the optional FloatEventVar.

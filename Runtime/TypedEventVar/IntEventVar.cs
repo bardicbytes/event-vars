@@ -5,9 +5,9 @@ using UnityEngine;
 namespace BardicBytes.EventVars
 {
     [CreateAssetMenu(menuName = "BardicBytes/EventVars/Int")]
-    public class IntEventVar : EventVar<int>, IMinMax<int>
+    public class IntEventVar : TypedEventVar<int>, IMinMax<int>
     {
-        [field:Header("MinMax")]
+        [field: Header("MinMax")]
         [field: SerializeField]
         public bool HasMin { get; protected set; } = false;
 

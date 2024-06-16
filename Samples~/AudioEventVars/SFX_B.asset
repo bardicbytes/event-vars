@@ -13,14 +13,17 @@ MonoBehaviour:
   m_Name: SFX_B
   m_EditorClassIdentifier: 
   <GUID>k__BackingField: 128338b692b4d1d4796cad3dcef0b1c1
-  untypedEvent:
+  _untypedEvent:
     m_PersistentCalls:
       m_Calls: []
-  debugLogValueChange: 0
+  _typedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  _debugLogValueChange: 0
   <RequireInstancing>k__BackingField: 0
-  resetValueOnDatalessRaise: 1
-  abortRaiseForIdenticalData: 0
-  requireData: 0
+  _resetValueOnDatalessRaise: 1
+  _abortRaiseForIdenticalData: 0
+  _requireData: 0
   <InitialValue>k__BackingField:
     clips:
     - {fileID: 8300000, guid: 93d5294633c63444da0c0daeff06bcec, type: 3}

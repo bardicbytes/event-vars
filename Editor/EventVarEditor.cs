@@ -4,7 +4,7 @@ using UnityEditor;
 
 namespace BardicBytes.EventVars.Editor
 {
-    [CustomEditor(typeof(EventVar), true), CanEditMultipleObjects]
+    [CustomEditor(typeof(EventAsset), true), CanEditMultipleObjects]
     public class EventVarEditor : UnityEditor.Editor
     {
         private bool showDefaultInspector = false;
@@ -12,7 +12,7 @@ namespace BardicBytes.EventVars.Editor
 
         public override void OnInspectorGUI()
         {
-            var targetListener = (EventVar)target;
+            var targetListener = (EventAsset)target;
             EditorHelper.DrawPropertiesByName(serializedObject, targetListener.EditorProperties);
 
             showAdvancedOptions = EditorGUILayout.Foldout(showAdvancedOptions, "Advanced Options", true);
@@ -21,10 +21,10 @@ namespace BardicBytes.EventVars.Editor
                 EditorHelper.DrawPropertiesByName(serializedObject, targetListener.AdvancedEditorProperties);
             }
             EditorGUILayout.Space(25);
-            
+
             showDefaultInspector = EditorGUILayout.Foldout(showDefaultInspector, "Default Inspector", true);
             if (showDefaultInspector) DrawDefaultInspector();
-            
+
             serializedObject.ApplyModifiedProperties();
         }
     }

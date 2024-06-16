@@ -2,7 +2,5 @@
 
 namespace BardicBytes.EventVars
 {
-    public class IntEventVarListener : EventVarListener<int>
-    {
-    }
+    public class IntEventVarListener : EventVarListener<int> { }
 }

@@ -5,22 +5,23 @@ using UnityEngine;
 namespace BardicBytes.EventVars
 {
     [CreateAssetMenu(menuName = "BardicBytes/EventVars/Float")]
-    public class FloatEventVar : EventVar<float>, IMinMax<float>
+    public class FloatEventVar : TypedEventVar<float>, IMinMax<float>
     {
 #if UNITY_EDITOR
         public override string[] EditorProperties => new string[] {
-            StringFormatting.GetBackingFieldName("InitialValue"),
-            StringFormatting.GetBackingFieldName("HasMin"),
-            StringFormatting.GetBackingFieldName("MinValue"),
-            StringFormatting.GetBackingFieldName("HasMax"),
-            StringFormatting.GetBackingFieldName("MaxValue"),
-            "typedEvent",
+            StringUtility.GetBackingFieldName("InitialValue"),
+            StringUtility.GetBackingFieldName("HasMin"),
+            StringUtility.GetBackingFieldName("MinValue"),
+            StringUtility.GetBackingFieldName("HasMax"),
+            StringUtility.GetBackingFieldName("MaxValue"),
+            "_typedEvent",
         };
 
 #endif
 
         // Implementation of IMinMax<float>
-        [field:Header("MinMax")]
+        [field: Header("MinMax")]
+        [field: Tooltip("When true, the argument will be change to be greater than or equal to MinValue")]
         [field: SerializeField]
         public bool HasMin { get; protected set; } = false;
 
@@ -29,7 +30,7 @@ namespace BardicBytes.EventVars
 
         [field: SerializeField]
         public bool HasMax { get; protected set; } = false;
-
+        [field: Tooltip("When true, the argument will be change to be less than or equal to MaxValue")]
         [field: SerializeField]
         public float MaxValue { get; protected set; } = 1;
 
@@ -48,6 +49,5 @@ namespace BardicBytes.EventVars
         public override void Raise(float data) => base.Raise(MinMaxClamp(data));
 
         public override float GetTypedValue(EventVarInstanceData bc) => bc.FloatValue;
-
     }
 }

@@ -39,7 +39,7 @@ namespace BardicBytes.EventVars.AudioEventVar
 
         public System.Action<AudioSource> onClipPlayStart;
 
-        public AudioEventPlaybackConfig GetRequest(int lastIndexPlayed )
+        public AudioEventPlaybackConfig GetRequest(int lastIndexPlayed)
         {
             return new AudioEventPlaybackConfig()
             {

@@ -1,5 +1,5 @@
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 namespace BardicBytes.EventVars.AudioEventVar.Editor
 {
@@ -13,9 +13,9 @@ namespace BardicBytes.EventVars.AudioEventVar.Editor
         {
             EditorGUI.BeginProperty(position, label, property);
 
-            if(isFoldoutOpen)
+            if (isFoldoutOpen)
             {
-                position.height = EditorGUIUtility.singleLineHeight/2f;
+                position.height = EditorGUIUtility.singleLineHeight / 2f;
             }
 
             string title = $"{(property.objectReferenceValue != null ? property.objectReferenceValue.name : "")}";
@@ -48,7 +48,7 @@ namespace BardicBytes.EventVars.AudioEventVar.Editor
                 //    position.y += position.height + EditorGUIUtility.standardVerticalSpacing;
                 //}
 
-                var propertyField = targetSerializedObject.FindProperty(StringFormatting.GetBackingFieldName("InitialValue"));
+                var propertyField = targetSerializedObject.FindProperty(StringUtility.GetBackingFieldName("InitialValue"));
 
                 //position.height = EditorGUIUtility.singleLineHeight * 5;
                 EditorGUI.PropertyField(position, propertyField, true);

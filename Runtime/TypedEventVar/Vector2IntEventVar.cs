@@ -5,14 +5,14 @@ using UnityEngine;
 namespace BardicBytes.EventVars
 {
     [CreateAssetMenu(menuName = "BardicBytes/EventVars/Vector2Int")]
-    public class Vector2IntEventVar : EventVar<int>, IMinMax<Vector2Int>
+    public class Vector2IntEventVar : TypedEventVar<int>, IMinMax<Vector2Int>
     {
         [field: Header("MinMax")]
         [field: SerializeField]
         public bool HasMin { get; protected set; } = false;
         [field: SerializeField]
         public bool HasMax { get; protected set; } = false;
-        
+
         [field: SerializeField]
         public Vector2Int MinValue { get; protected set; } = Vector2Int.zero;
         [field: SerializeField]
