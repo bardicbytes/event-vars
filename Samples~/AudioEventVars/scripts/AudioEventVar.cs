@@ -25,32 +25,40 @@ namespace BardicBytes.EventVars.AudioEventVar
 
         protected override void OnEnable()
         {
+            base.OnEnable();
+
             _lastFramePlayed = -1;
+            RebuildAvailableClipIndices();
+        }
 
-            _availableClipIndecies = new List<int>(TypedStoredValue.clips.Length);
+        private void RebuildAvailableClipIndices()
+        {
+            var config = TypedStoredValue ?? InitialValue;
+            if (config?.clips == null)
+            {
+                _availableClipIndecies = new List<int>();
+                return;
+            }
 
-            //
-            switch (TypedStoredValue.selectionMode)
+            _availableClipIndecies = new List<int>(config.clips.Length);
+            for (int i = 0; i < config.clips.Length; i++)
+                _availableClipIndecies.Add(i);
+
+            switch (config.selectionMode)
             {
                 case AudioEventConfig.ClipSelectionMode.RandomNoRepeat:
-                    Shuffle(_availableClipIndecies);
-                    break;
                 case AudioEventConfig.ClipSelectionMode.RandomOrder:
                     Shuffle(_availableClipIndecies);
                     break;
-                case AudioEventConfig.ClipSelectionMode.OriginalOrder:
-                    break;
             }
-
-            base.OnEnable();
         }
 
         public override AudioEventPlaybackConfig Evaluate(AudioEventConfig inValue) => inValue.GetRequest(_lastIndexPlayed);
 
-        public override AudioEventConfig GetTypedValue(EventVarInstanceData data)
-        {
-            return (AudioEventConfig)data.SystemObjectValue;
-        }
+        /// <summary>
+        /// AudioEventConfig is not stored in EventVarInstanceData, so instancer overrides are unsupported.
+        /// </summary>
+        public override AudioEventConfig GetTypedValue(EventVarInstanceData data) => InitialValue;
 
         public virtual void Play() => Raise();
 

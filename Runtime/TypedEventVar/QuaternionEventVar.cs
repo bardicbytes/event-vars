@@ -7,6 +7,6 @@ namespace BardicBytes.EventVars
     [CreateAssetMenu(menuName = "BardicBytes/EventVars/Quaternion")]
     public class QuaternionEventVar : TypedEventVar<Quaternion>
     {
-        public override Quaternion GetTypedValue(EventVarInstanceData bc) => (Quaternion)bc.QuaternionValue;
+        public override Quaternion GetTypedValue(EventVarInstanceData bc) => bc.QuaternionValue;
     }
 }

@@ -6,6 +6,6 @@ namespace BardicBytes.EventVars
 {
     public class TransformEventVarInitializer : EventVarInitializer<TransformEventVar, Transform>
     {
-        protected override void RaiseEventVar() => _target.Raise(_initialValue);
+        protected override void RaiseEventVar() => ResolveTarget()?.Raise(_initialValue);
     }
 }

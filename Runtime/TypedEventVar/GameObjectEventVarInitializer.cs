@@ -6,6 +6,6 @@ namespace BardicBytes.EventVars
 {
     public class GameObjectEventVarInitializer : EventVarInitializer<GameObjectEventVar, GameObject>
     {
-        protected override void RaiseEventVar() => _target.Raise(_initialValue);
+        protected override void RaiseEventVar() => ResolveTarget()?.Raise(_initialValue);
     }
 }

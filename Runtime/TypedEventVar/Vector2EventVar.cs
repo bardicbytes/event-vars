@@ -4,9 +4,20 @@ using UnityEngine;
 
 namespace BardicBytes.EventVars
 {
-    [CreateAssetMenu(menuName = "BardicBytes/EventVars/Vector3")]
+    [CreateAssetMenu(menuName = "BardicBytes/EventVars/Vector2")]
     public class Vector2EventVar : TypedEventVar<Vector2>, IMinMax<Vector2>
     {
+#if UNITY_EDITOR
+        public override string[] EditorProperties => new string[] {
+            StringUtility.GetBackingFieldName("InitialValue"),
+            StringUtility.GetBackingFieldName("HasMin"),
+            StringUtility.GetBackingFieldName("MinValue"),
+            StringUtility.GetBackingFieldName("HasMax"),
+            StringUtility.GetBackingFieldName("MaxValue"),
+            "_typedEvent",
+        };
+#endif
+
         [field: Header("MinMax")]
         [field: SerializeField]
         public bool HasMin { get; protected set; } = false;
@@ -22,7 +33,7 @@ namespace BardicBytes.EventVars
         public Vector2 MinMaxClamp(Vector2 val)
         {
             if (HasMax && HasMin)
-                return new Vector2(Mathf.Clamp(val.x, MinValue.x, MaxValue.y), Mathf.Clamp(val.y, MinValue.y, MaxValue.y));
+                return new Vector2(Mathf.Clamp(val.x, MinValue.x, MaxValue.x), Mathf.Clamp(val.y, MinValue.y, MaxValue.y));
             else if (HasMax)
                 return new Vector2(Mathf.Min(val.x, MaxValue.x), Mathf.Min(val.y, MaxValue.y));
             else if (HasMin)
@@ -30,6 +41,8 @@ namespace BardicBytes.EventVars
             else return val;
         }
 
-        public override Vector2 GetTypedValue(EventVarInstanceData bc) => bc.Vector3Value;
+        protected override Vector2 ClampStoredValue(Vector2 value) => MinMaxClamp(value);
+
+        public override Vector2 GetTypedValue(EventVarInstanceData bc) => bc.Vector2Value;
     }
 }

@@ -45,8 +45,7 @@ namespace BardicBytes.EventVars
             else return val;
         }
 
-        // override Raise and clamp the value
-        public override void Raise(float data) => base.Raise(MinMaxClamp(data));
+        protected override float ClampStoredValue(float value) => MinMaxClamp(value);
 
         public override float GetTypedValue(EventVarInstanceData bc) => bc.FloatValue;
     }

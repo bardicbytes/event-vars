@@ -6,6 +6,16 @@ namespace BardicBytes.EventVars
 {
     public class BoolEventVarListener : EventVarListener<bool>
     {
+        public override string[] EditorProperties => new string[]
+        {
+            "typedEventVar",
+            "instancer",
+            "typedResponse",
+            "invertValueForResponse",
+            "invokeOnEnable",
+            "conditionalResponses"
+        };
+
         [SerializeField]
         private bool invertValueForResponse = false;
 

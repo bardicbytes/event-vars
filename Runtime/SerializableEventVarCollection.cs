@@ -20,6 +20,7 @@ namespace BardicBytes.EventVars
 
         // Collections of serializable event variables for spatial data types
         public List<SerializableEventVarData<Vector3>> vector3EventVars;
+        public List<SerializableEventVarData<Vector2>> vector2EventVars;
         public List<SerializableEventVarData<Vector2Int>> vector2IntEventVars;
         public List<SerializableEventVarData<Quaternion>> quaternionEventVars;
 
@@ -37,13 +38,17 @@ namespace BardicBytes.EventVars
             boolEventVars = new List<SerializableEventVarData<bool>>();
             floatEventVars = new List<SerializableEventVarData<float>>();
             vector3EventVars = new List<SerializableEventVarData<Vector3>>();
+            vector2EventVars = new List<SerializableEventVarData<Vector2>>();
             vector2IntEventVars = new List<SerializableEventVarData<Vector2Int>>();
             quaternionEventVars = new List<SerializableEventVarData<Quaternion>>();
 
             // Populate the collections based on the input event variables
+            if (eventVars == null) return;
+
             for (int i = 0; i < eventVars.Count; i++)
             {
                 var eventVar = eventVars[i];
+                if (eventVar == null) continue;
 
                 if (eventVar is IEventVarInput<string> evS)
                 {
@@ -64,6 +69,10 @@ namespace BardicBytes.EventVars
                 else if (eventVar is IEventVarInput<Vector3> evV3)
                 {
                     vector3EventVars.Add(evV3.CreateSerializableData());
+                }
+                else if (eventVar is IEventVarInput<Vector2> evV2f)
+                {
+                    vector2EventVars.Add(evV2f.CreateSerializableData());
                 }
                 else if (eventVar is IEventVarInput<Vector2Int> evV2)
                 {

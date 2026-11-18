@@ -14,19 +14,28 @@ public class MortalityBehaviour : MonoBehaviour
     [field: SerializeField] public UnityEvent<MortalityBehaviour> OnMinHealth { get; private set; } = default;
 
     private FloatEventVar _healthInstance;
+
     private void OnEnable()
     {
+        if (_instancer == null || _healthEventVar == null || !_instancer.HasInstance(_healthEventVar))
+        {
+            Debug.LogWarning($"{name}: MortalityBehaviour could not resolve a health EventVar instance.", this);
+            return;
+        }
+
         _healthInstance = _instancer.GetInstance(_healthEventVar);
-        _healthInstance.AddListener(HandleHealthChanged);
+        _healthInstance?.AddListener(HandleHealthChanged);
     }
+
     private void OnDisable()
     {
-        _healthInstance.RemoveListener(HandleHealthChanged);
+        _healthInstance?.RemoveListener(HandleHealthChanged);
         _healthInstance = null;
     }
 
     private void HandleHealthChanged(float newHealth)
     {
+        if (_healthInstance == null) return;
         if (!Mathf.Approximately(newHealth, _healthInstance.MinValue)) return;
 
         // raising without an argument will reset the value to its initial
@@ -34,5 +43,4 @@ public class MortalityBehaviour : MonoBehaviour
         OnMinHealth.Invoke(this);
         if (destroyOnDeath) Destroy(gameObject);
     }
-
 }

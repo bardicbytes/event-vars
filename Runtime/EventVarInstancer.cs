@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace BardicBytes.EventVars
 {
@@ -17,11 +18,14 @@ namespace BardicBytes.EventVars
     ///
     /// This class helps to encapsulate the logic around event variable instantiation,
     /// ensuring that instances are created and managed in a consistent manner.
+    /// Awake runs before default components so initializers can resolve clones.
     /// </summary>
     [DisallowMultipleComponent]
+    [DefaultExecutionOrder(-100)]
     public class EventVarInstancer : MonoBehaviour
     {
         [SerializeField]
+        [FormerlySerializedAs("eventVarInstances")]
         private List<EventVarInstanceData> _eventVarInstances;
 
         private Dictionary<BaseEventVar, int> _evInstanceLookup = default;
@@ -32,8 +36,10 @@ namespace BardicBytes.EventVars
         [ContextMenu("Refresh Editor Names")]
         private void RefreshEditorNames()
         {
+            if (_eventVarInstances == null) return;
             for (int i = 0; i < _eventVarInstances.Count; i++)
             {
+                if (_eventVarInstances[i] == null) continue;
                 _eventVarInstances[i].RefreshEditorName();
             }
         }
@@ -41,18 +47,35 @@ namespace BardicBytes.EventVars
 
         private void Awake() => Initialize();
 
+        private void OnDestroy()
+        {
+            if (_eventVarInstances == null) return;
+            for (int i = 0; i < _eventVarInstances.Count; i++)
+            {
+                _eventVarInstances[i]?.DestroyClone();
+            }
+        }
+
         private void Initialize()
         {
             if (IsInitialized && Application.isPlaying && _evInstanceLookup != null) return;
 
             _evInstanceLookup = new Dictionary<BaseEventVar, int>();
+            if (_eventVarInstances == null) _eventVarInstances = new List<EventVarInstanceData>();
 
             for (int i = 0; i < _eventVarInstances.Count; i++)
             {
-                if (_eventVarInstances[i].Source == null) continue;
+                if (_eventVarInstances[i] == null || _eventVarInstances[i].Source == null) continue;
+
+                var source = _eventVarInstances[i].Source;
+                if (_evInstanceLookup.ContainsKey(source))
+                {
+                    Debug.LogError($"Duplicate EventVar '{source.name}' on {name}. Skipping the extra entry.", this);
+                    continue;
+                }
 
                 _eventVarInstances[i].RuntimeInitialize(this);
-                _evInstanceLookup.Add(_eventVarInstances[i].Source, i);
+                _evInstanceLookup.Add(source, i);
             }
             IsInitialized = true;
         }
@@ -73,9 +96,15 @@ namespace BardicBytes.EventVars
         public BaseEventVar GetInstance(BaseEventVar eventVarAssetRef)
         {
             BaseEventVar ev = null;
+            if (eventVarAssetRef == null)
+            {
+                Debug.LogWarning($"GetInstance called with null EventVar on {name}.", this);
+                return null;
+            }
+
             if (!HasInstance(eventVarAssetRef))
             {
-                Debug.LogWarning($"no instance of {eventVarAssetRef.name} found on {name}, Check with HasInstance first.");
+                Debug.LogWarning($"no instance of {eventVarAssetRef.name} found on {name}, Check with HasInstance first.", this);
                 return ev;
             }
 
@@ -101,13 +130,13 @@ namespace BardicBytes.EventVars
         /// <returns>the instance data for that asset or null if no data exists</returns>
         public EventVarInstanceData FindInstanceData(BaseEventVar ev)
         {
-            EventVarInstanceData e = null;
+            if (_eventVarInstances == null) return null;
             for (int i = 0; i < _eventVarInstances.Count; i++)
             {
-                e = _eventVarInstances[i];
-                if (e.Source != ev) continue;
+                var entry = _eventVarInstances[i];
+                if (entry != null && entry.Source == ev) return entry;
             }
-            return e;
+            return null;
         }
 
         /// <summary>
@@ -117,11 +146,14 @@ namespace BardicBytes.EventVars
         /// <returns>true if the instancer has an instance of the event var</returns>
         public bool HasInstance(BaseEventVar ev)
         {
+            if (ev == null) return false;
+            if (_eventVarInstances == null) return false;
+
             if (!Application.isPlaying)
             {
                 for (int i = 0; i < _eventVarInstances.Count; i++)
                 {
-                    if (_eventVarInstances[i].Source == ev) return true;
+                    if (_eventVarInstances[i] != null && _eventVarInstances[i].Source == ev) return true;
                 }
                 return false;
             }

@@ -13,10 +13,11 @@ namespace BardicBytes.EventVars
 
         [Tooltip("If no initial source is set, the value of this field is this Fallback Value.")]
         [SerializeField] private TOutput _fallbackValue = default;
-        [Tooltip("Provides the field with a source EventVar. This source will be cloned when the field is first evaluated.")]
+        [Tooltip("Source EventVar. During play, an assigned instancer supplies the clone. This field does not create a clone.")]
         [SerializeField] private TEventVar _initialSource = default;
 
         private TEventVar _currentSource = default;
+        private bool _warnedMissingInstance;
 
         /// <summary>
         /// This EventVar is the current source eventVar used when the field is evaluated.
@@ -33,10 +34,20 @@ namespace BardicBytes.EventVars
 
             if (_currentSource == null) return _fallbackValue;
 
-            // if there is an instancer assigned to this component, the source will be used as a key to find the instance.
-            if (_instancer != null && _instancer.HasInstance(_currentSource))
+            if (_instancer != null && Application.isPlaying)
             {
-                return _instancer.GetInstance(_currentSource).Value;
+                if (_instancer.HasInstance(_currentSource))
+                {
+                    var instance = _instancer.GetInstance(_currentSource);
+                    if (instance != null) return instance.Value;
+                }
+
+                if (!_warnedMissingInstance)
+                {
+                    _warnedMissingInstance = true;
+                    Debug.LogWarning($"No instance of {_currentSource.name} on {_instancer.name}. Using the fallback value.", _instancer);
+                }
+                return _fallbackValue;
             }
 
             return _currentSource.Value;

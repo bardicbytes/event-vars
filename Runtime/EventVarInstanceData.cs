@@ -24,12 +24,76 @@ namespace BardicBytes.EventVars
         [SerializeField]
         private string _editorName = "unnamed";
 
-        public void RefreshEditorName() => _editorName = string.Format("{0}", Source.name);
+        public void RefreshEditorName() =>
+            _editorName = Source != null ? Source.name : "unnamed";
 
         public EventVarInstanceData() => _editorName = "NEW@" + System.DateTime.Now;
+
+        /// <summary>
+        /// Copies the source asset's InitialValue into the matching typed fields.
+        /// Call when Source is assigned so clones do not silently fall back to type defaults.
+        /// </summary>
+        public void SeedValuesFromSource()
+        {
+            if (Source == null) return;
+
+            switch (Source)
+            {
+                case FloatEventVar f:
+                    FloatValue = f.InitialValue;
+                    break;
+                case IntEventVar i:
+                    IntValue = i.InitialValue;
+                    break;
+                case BoolEventVar b:
+                    BoolValue = b.InitialValue;
+                    break;
+                case StringEventVar s:
+                    StringValue = s.InitialValue;
+                    break;
+                case Vector3EventVar v3:
+                    Vector3Value = v3.InitialValue;
+                    break;
+                case Vector2EventVar v2:
+                    Vector2Value = v2.InitialValue;
+                    break;
+                case Vector2IntEventVar v2i:
+                    Vector2IntValue = v2i.InitialValue;
+                    break;
+                case QuaternionEventVar q:
+                    QuaternionValue = q.InitialValue;
+                    break;
+                case TransformEventVar t:
+                    UnityObjectValue = t.InitialValue;
+                    break;
+                case GameObjectEventVar go:
+                    UnityObjectValue = go.InitialValue;
+                    break;
+                case RigidbodyEventVar rb:
+                    UnityObjectValue = rb.InitialValue;
+                    break;
+            }
+
+            RefreshEditorName();
+        }
 #endif
 
-        public override string ToString() => $"EventVarInstanceData: {_editorName}.";
+        public override string ToString()
+        {
+#if UNITY_EDITOR
+            return $"EventVarInstanceData: {_editorName}.";
+#else
+            return Source != null ? Source.name : "EventVarInstanceData";
+#endif
+        }
+
+        public void DestroyClone()
+        {
+            if (_eventVarClone == null) return;
+            if (Application.isPlaying) Object.Destroy(_eventVarClone);
+            else Object.DestroyImmediate(_eventVarClone);
+            _eventVarClone = null;
+        }
 
 
         #region value auto properties
@@ -45,9 +109,6 @@ namespace BardicBytes.EventVars
 
         // for the likes of Transform, Rigidbody, and Gameobject
         [field: SerializeField] public UnityEngine.Object UnityObjectValue { get; set; }
-
-        //for any non-unity Object serializable class
-        [field: SerializeField] public System.Object SystemObjectValue { get; set; }
         #endregion
 
 

@@ -9,7 +9,7 @@ namespace BardicBytes.EventVars
     /// </summary>
     public abstract class BaseEventVarField
     {
-        [Tooltip("[OPTIONAL] If set, the field will try to get an instanced value instead of using the source EventVar.")]
+        [Tooltip("Optional. During play, the field reads this instancer's clone of the source EventVar. The instancer creates the clone. If the clone is missing, the fallback value is used.")]
         [SerializeField] protected EventVarInstancer _instancer;
     }
 }

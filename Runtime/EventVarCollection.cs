@@ -4,7 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 using UnityEngine;
 
 namespace BardicBytes.EventVars
@@ -37,7 +39,7 @@ namespace BardicBytes.EventVars
 
         [SerializeField]
         [HideInInspector]
-        private List<int> guidHash = default;
+        private List<string> assetGuids = default;
 
         [field: SerializeField]
         public bool ExportPretty { get; set; } = false;
@@ -52,23 +54,26 @@ namespace BardicBytes.EventVars
         public T Get<T>(int index) where T : BaseEventVar => (T)eventVars[index];
 
         public BaseEventVar this[int index] => eventVars[index];
-        public int Count => eventVars.Count;
+        public int Count => eventVars == null ? 0 : eventVars.Count;
 
         private void OnValidate()
         {
-            bool valid = eventVars.Count == guidHash.Count;
-            if (!valid) guidHash = new List<int>(new int[eventVars.Count]);
+            if (eventVars == null) eventVars = new List<BaseEventVar>();
+            if (assetGuids == null || assetGuids.Count != eventVars.Count)
+            {
+                var next = new List<string>(eventVars.Count);
+                for (int i = 0; i < eventVars.Count; i++)
+                    next.Add(i < (assetGuids == null ? 0 : assetGuids.Count) ? assetGuids[i] : null);
+                assetGuids = next;
+            }
 
             for (int i = 0; i < eventVars.Count; i++)
             {
-                if (eventVars[i] == null) break;
+                if (eventVars[i] == null) continue;
 
-                int hash = eventVars[i].GUID.GetHashCode();
-
-                if (guidHash[i] == 0 || hash != guidHash[i])
-                {
-                    guidHash[i] = hash;
-                }
+                var id = eventVars[i].GUID;
+                if (string.IsNullOrEmpty(assetGuids[i]) || assetGuids[i] != id)
+                    assetGuids[i] = id;
             }
         }
 
@@ -78,29 +83,68 @@ namespace BardicBytes.EventVars
         /// <param name="data">serializable eventVar data</param>
         public void Import(SerializableEventVarCollection data)
         {
-#if DEBUG
-            if (Debug.isDebugBuild) Debug.Assert(data != null, "Import Error, data is null");
-#endif
+            if (data == null)
+            {
+                Debug.LogError("Import Error, data is null");
+                return;
+            }
+
             ImportList(data.floatEventVars);
             ImportList(data.boolEventVars);
             ImportList(data.intEventVars);
             ImportList(data.stringEventVars);
             ImportList(data.vector3EventVars);
+            ImportList(data.vector2EventVars);
             ImportList(data.vector2IntEventVars);
+            ImportList(data.quaternionEventVars);
 
-            void ImportList<T>(List<SerializableEventVarData<T>> data)
+            void ImportList<T>(List<SerializableEventVarData<T>> entries)
             {
-                for (int i = 0; i < data.Count; i++)
+                if (entries == null) return;
+                for (int i = 0; i < entries.Count; i++)
                 {
-                    var a = data[i];
-                    var aHash = a.guid.GetHashCode();
-                    var eventVarIndex = guidHash.IndexOf(aHash);
-                    eventVars[eventVarIndex].SetStoredValue(a.value);
+                    var entry = entries[i];
+                    if (entry == null) continue;
+                    var eventVarIndex = FindEventVarIndex(entry.guid);
+                    if (eventVarIndex < 0)
+                    {
+                        Debug.LogWarning($"EventVarCollection '{name}' has no entry for GUID {entry.guid}.");
+                        continue;
+                    }
+                    try
+                    {
+                        eventVars[eventVarIndex].SetStoredValue(entry.value);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogWarning(
+                            $"EventVarCollection '{name}' failed to import GUID {entry.guid} ({eventVars[eventVarIndex]?.name}): {e.Message}",
+                            this);
+                    }
                 }
             }
         }
 
-        public SerializableEventVarCollection Export() => new SerializableEventVarCollection(eventVars);
+        private int FindEventVarIndex(string guid)
+        {
+            if (string.IsNullOrEmpty(guid) || eventVars == null) return -1;
+
+            if (assetGuids != null)
+            {
+                int cached = assetGuids.IndexOf(guid);
+                if (cached >= 0 && cached < eventVars.Count && eventVars[cached] != null)
+                    return cached;
+            }
+
+            for (int i = 0; i < eventVars.Count; i++)
+            {
+                if (eventVars[i] != null && eventVars[i].GUID == guid) return i;
+            }
+
+            return -1;
+        }
+
+        public SerializableEventVarCollection Export() => new SerializableEventVarCollection(eventVars ?? new List<BaseEventVar>());
 
         [ContextMenu("Log Export")]
         public void LogExport() => Debug.Log(JsonUtility.ToJson(Export(), true));
@@ -120,12 +164,10 @@ namespace BardicBytes.EventVars
         /// <returns>returns null if there was an error reading the file or deserializing the json</returns>
         private static SerializableEventVarCollection DeserializeJsonAtPath(string path)
         {
-            var text = File.ReadAllText(path);
-
             try
             {
-                var data = JsonUtility.FromJson<SerializableEventVarCollection>(text);
-                return data;
+                var text = File.ReadAllText(path);
+                return JsonUtility.FromJson<SerializableEventVarCollection>(text);
             }
             catch (Exception e)
             {
@@ -137,6 +179,7 @@ namespace BardicBytes.EventVars
         public async Task SaveAsync(string filename)
         {
             var path = GetPath(filename);
+            EnsureSaveDirectory(path);
             var json = JsonUtility.ToJson(Export(), ExportPretty);
 
             try
@@ -152,8 +195,29 @@ namespace BardicBytes.EventVars
         public void SaveDefault() => Save("default");
         public void LoadDefault() => Load("default");
 
-        public void Save(string filename) => ExportToJson(GetPath(filename));
-        public void Load(string filename) => ImportFromJson(GetPath(filename));
+        public void Save(string filename)
+        {
+            var path = GetPath(filename);
+            EnsureSaveDirectory(path);
+            ExportToJson(path);
+        }
+
+        public void Load(string filename)
+        {
+            var path = GetPath(filename);
+            if (!File.Exists(path))
+            {
+                Debug.LogWarning($"No EventVarCollection save file at {path}");
+                return;
+            }
+            ImportFromJson(path);
+        }
+
+        private static void EnsureSaveDirectory(string path)
+        {
+            var directory = Path.GetDirectoryName(path);
+            if (!string.IsNullOrEmpty(directory)) Directory.CreateDirectory(directory);
+        }
 
         private string GetPath(string filename)
         {

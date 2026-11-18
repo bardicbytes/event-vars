@@ -12,6 +12,7 @@ namespace BardicBytes.EventVars.Editor
 
         public override void OnInspectorGUI()
         {
+            serializedObject.Update();
             var targetListener = (EventAsset)target;
             EditorHelper.DrawPropertiesByName(serializedObject, targetListener.EditorProperties);
 

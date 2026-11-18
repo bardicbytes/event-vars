@@ -33,25 +33,14 @@ namespace BardicBytes.EventVars
         /// Similar to EditorProperties, but these properties will be drawn within a foldout.
         /// </summary>
         public override string[] AdvancedEditorProperties => new string[] {
-            "requireData",
-            "resetValueOnDatalessRaise",
-            "abortRaiseForIdenticalData"
+            "_resetValueOnDatalessRaise",
+            "_abortRaiseForIdenticalData",
+            "_untypedEvent"
         };
 
         protected override sealed void OnValidate()
         {
-            base.OnValidate_first_EventVar();
-            if (TypedStoredValue == null
-                || (TypedStoredValue != null
-                && !TypedStoredValue.Equals(InitialValue)))
-            {
-                SetStoredValue(InitialValue);
-            }
-
-            _lastRaiseTime = 0;
-            _runtimeListenerCount = 0;
-            if (string.IsNullOrEmpty(GUID)) RefreshGUID_EditorOnly();
-            base.OnValidate_last_EventVar();
+            base.OnValidate();
         }
 #endif
         // this enables the implicit conversion of an EventVar to it's output type
@@ -76,9 +65,6 @@ namespace BardicBytes.EventVars
         protected bool _resetValueOnDatalessRaise = true;
         [SerializeField, Tooltip("If TRUE, the event will not raise if the data is identical.")]
         protected bool _abortRaiseForIdenticalData = false;
-        [SerializeField]
-        [Tooltip("Also prevents reset/dataless raises if current value matches initial value")]
-        protected bool _requireData = false;
 
         [field: SerializeField]
         public TInput InitialValue { get; protected set; }
@@ -100,7 +86,7 @@ namespace BardicBytes.EventVars
         /// <summary>
         /// The sum total number of listeners registered to the following: the typed UnityEvent from EventVar, the untyped UnityEvent from EventAsset, and runtime listeners.
         /// </summary>
-        public override int TotalListeners => base.TotalListeners + _typedEvent.GetPersistentEventCount();
+        public override int TotalListeners => base.TotalListeners + (_typedEvent == null ? 0 : _typedEvent.GetPersistentEventCount());
 
         /// <summary>
         /// This property evaluates TypedStoredValue and provides an TOutput
@@ -133,11 +119,11 @@ namespace BardicBytes.EventVars
         {
             if (newStoredValue == null || newStoredValue == default)
             {
-                TypedStoredValue = default;
+                TypedStoredValue = ClampStoredValue(default);
             }
             else if (newStoredValue is TInput typedValue)
             {
-                this.TypedStoredValue = typedValue;
+                this.TypedStoredValue = ClampStoredValue(typedValue);
             }
             else
             {
@@ -156,6 +142,7 @@ namespace BardicBytes.EventVars
         public TEventVar GetCreateInstance(EventVarInstancer owner)
         {
             var c = Instantiate(this);
+            c.hideFlags = HideFlags.HideAndDontSave;
             c.CloneSource = this;
             c.Owner = owner;
             c.IsClone = true;
@@ -188,17 +175,19 @@ namespace BardicBytes.EventVars
 #if DEBUG
             if (Debug.isDebugBuild) Debug.Assert(!RequireInstancing || IsClone);
 #endif
+            if (_resetValueOnDatalessRaise)
+            {
+                TInput initial = ClampStoredValue(InitialValue);
+                if (_abortRaiseForIdenticalData && EventVarEquality.Equals(TypedStoredValue, initial)) return;
 
-            if (_requireData
-                && _resetValueOnDatalessRaise
-                && TypedStoredValue.Equals(InitialValue)) return;
+                ChangeCurrentValue(initial);
+                InvokeRaisedEvents();
+                return;
+            }
 
-            if (_resetValueOnDatalessRaise) ChangeCurrentValue(InitialValue);
-
-            if (_requireData) return;
-
-            this.Raise(InitialValue);
-            base.Raise();
+            // Dataless raise without reset: invoke with the current value.
+            // Do not call Raise(TypedStoredValue) — identical-data abort would always fire.
+            InvokeRaisedEvents();
         }
 
         /// <summary>
@@ -210,18 +199,28 @@ namespace BardicBytes.EventVars
 #if DEBUG
             if (Debug.isDebugBuild) Debug.Assert(!RequireInstancing || IsClone);
 #endif
-            if (_abortRaiseForIdenticalData && TypedStoredValue.Equals(data)) return;
+            data = ClampStoredValue(data);
+            if (_abortRaiseForIdenticalData && EventVarEquality.Equals(TypedStoredValue, data)) return;
 
             ChangeCurrentValue(data);
+            InvokeRaisedEvents();
+        }
 
+        /// <summary>
+        /// Applies min/max policy before a value is stored. Override on types that implement <see cref="IMinMax{T}"/>.
+        /// </summary>
+        protected virtual TInput ClampStoredValue(TInput value) => value;
+
+        private void InvokeRaisedEvents()
+        {
             try
             {
-                _typedEvent.Invoke(Value);
+                _typedEvent?.Invoke(Value);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                if (Debug.isDebugBuild) Debug.LogError($"[f{Time.frameCount}] EventVar \"{name}\" Exception Thrown in UnityEvent-{Value.GetType().Name} ({_typedEvent}).");
-                throw ex;
+                if (Debug.isDebugBuild) Debug.LogError($"[f{Time.frameCount}] EventVar \"{name}\" Exception Thrown in UnityEvent-{typeof(TOutput).Name} ({_typedEvent}).");
+                throw;
             }
 
             base.Raise();
@@ -236,6 +235,7 @@ namespace BardicBytes.EventVars
         {
             if (Debug.isDebugBuild) Debug.Assert(!RequireInstancing || IsClone);
 
+            if (_typedEvent == null) _typedEvent = new UnityEvent<TOutput>();
             _typedEvent.AddListener(action);
             _runtimeListenerCount++;
         }
@@ -246,8 +246,15 @@ namespace BardicBytes.EventVars
         /// <param name="action">this action will no longer be invoked</param>
         public virtual void RemoveListener(UnityAction<TOutput> action)
         {
+            if (_typedEvent == null) return;
             _typedEvent.RemoveListener(action);
             _runtimeListenerCount--;
+
+            if (_runtimeListenerCount < 0)
+            {
+                Debug.LogWarning($"EventVar \"{name}\" RemoveListener decreased runtime listener count below 0.", this);
+                _runtimeListenerCount = 0;
+            }
         }
 
         /// <summary>
@@ -261,37 +268,17 @@ namespace BardicBytes.EventVars
 
         public SerializableEventVarData<TInput> CreateSerializableData() => new SerializableEventVarData<TInput>(this);
 
-        // fix these:
-
-        /// <summary>
-        /// This function should not be used for typed eventvars. Use the AddListener override
-        /// </summary>
-        public override void AddListener(UnityAction action)
+        public override void ResetRuntimeState()
         {
-            throw new NotImplementedException("Typed EventVars must use typed events.");
-        }
-
-        /// <summary>
-        /// This function should not be used for typed eventvars. Use the RemoveListener override
-        /// </summary>
-        public override void RemoveListener(UnityAction action)
-        {
-            throw new NotImplementedException("Typed EventVars must use typed events.");
+            SetStoredValue(InitialValue);
+            _isInitialized = false;
+            if (_typedEvent != null) _typedEvent.RemoveAllListeners();
+            base.ResetRuntimeState();
         }
 
         /*
          * private/protected methods
          */
-        protected override void OnEnable()
-        {
-            SetStoredValue(InitialValue);
-
-            _isInitialized = false;
-
-            if (_typedEvent != null) _typedEvent.RemoveAllListeners();
-
-            base.OnEnable();
-        }
 
         protected override void Initialize()
         {
@@ -302,15 +289,15 @@ namespace BardicBytes.EventVars
 
         private void SetInitialValue(TInput initialValue)
         {
-            this.InitialValue = initialValue;
-            if (_isInitialized) ChangeCurrentValue(initialValue);
-            else SetStoredValue(initialValue);
+            this.InitialValue = ClampStoredValue(initialValue);
+            if (_isInitialized) ChangeCurrentValue(this.InitialValue);
+            else SetStoredValue(this.InitialValue);
         }
 
         private void ChangeCurrentValue(TInput data)
         {
 #if DEBUG
-            bool shouldPrint = Debug.isDebugBuild && _debugLogValueChange && !data.Equals(TypedStoredValue);
+            bool shouldPrint = Debug.isDebugBuild && _debugLogValueChange && !EventVarEquality.Equals(data, TypedStoredValue);
             if (shouldPrint) Debug.Log($"{name} value changes. {TypedStoredValue}={data}");
 #endif
             SetStoredValue(data);

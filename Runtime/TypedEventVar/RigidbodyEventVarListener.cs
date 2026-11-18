@@ -1,12 +1,10 @@
 //alex@bardicbytes.com
 
-using BardicBytes.EventVars;
 using UnityEngine;
 
-public class RigidbodyEventVarListener : EventVarListener<Rigidbody>
+namespace BardicBytes.EventVars
 {
-    public class TransformEventVarInitializer : EventVarInitializer<RigidbodyEventVar, Rigidbody>
+    public class RigidbodyEventVarListener : EventVarListener<Rigidbody>
     {
-        protected override void RaiseEventVar() => _target.Raise(_initialValue);
     }
 }

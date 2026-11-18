@@ -50,7 +50,10 @@ public class HealthChangeZone : MonoBehaviour
         if (!trackedTargets.ContainsKey(other.attachedRigidbody)) TrackTarget(other);
 
         var instancer = trackedTargets[other.attachedRigidbody];
+        if (instancer == null || healthEventVar == null || !instancer.HasInstance(healthEventVar)) return;
+
         var instance = instancer.GetInstance(healthEventVar);
+        if (instance == null) return;
 
         instance.Raise(instance.Value - damagePerSecond * Time.deltaTime);
     }

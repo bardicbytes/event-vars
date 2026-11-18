@@ -32,13 +32,16 @@ namespace BardicBytes.EventVars.Editor
                 }
             }
 
+            if (refreshTargets.Count == 0) return;
+
             for (int i = 0; i < refreshTargets.Count; i++)
             {
                 var eventVar = refreshTargets[i];
                 eventVar.RefreshGUID_EditorOnly();
                 EditorUtility.SetDirty(eventVar);
-                AssetDatabase.SaveAssets();
             }
+
+            AssetDatabase.SaveAssets();
         }
     }
 }

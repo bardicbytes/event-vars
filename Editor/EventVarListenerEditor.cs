@@ -9,8 +9,11 @@ namespace BardicBytes.EventVars.Editor
 
         public override void OnInspectorGUI()
         {
+            serializedObject.Update();
             var targetListener = (EventAssetListener)target;
             EditorHelper.DrawPropertiesByName(serializedObject, targetListener.EditorProperties);
+
+            serializedObject.ApplyModifiedProperties();
 
             _foldout = EditorGUILayout.Foldout(_foldout, "Default Inspector", true);
             if (_foldout) DrawDefaultInspector();

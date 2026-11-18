@@ -1,7 +1,9 @@
 ﻿// alex@bardicbytes.com
 
 using System;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -42,21 +44,26 @@ namespace BardicBytes.EventVars
         private void Reset()
         {
             Reset_first_EventVar();
-
-            if (string.IsNullOrEmpty(GUID)) RefreshGUID_EditorOnly();
-
+            EnsureAssetGUID();
             Reset_last_EventVar();
         }
 
         protected virtual void OnValidate()
         {
             OnValidate_first_EventVar();
-
-            _lastRaiseTime = 0;
-            _runtimeListenerCount = 0;
-            if (string.IsNullOrEmpty(GUID)) RefreshGUID_EditorOnly();
-
+            EnsureAssetGUID();
             OnValidate_last_EventVar();
+        }
+
+        private void EnsureAssetGUID()
+        {
+            var path = AssetDatabase.GetAssetPath(this);
+            if (string.IsNullOrEmpty(path)) return;
+
+            var assetGuid = AssetDatabase.AssetPathToGUID(path);
+            if (string.IsNullOrEmpty(assetGuid)) return;
+
+            if (GUID != assetGuid) RefreshGUID_EditorOnly();
         }
 
         // extendable methods
@@ -100,7 +107,7 @@ namespace BardicBytes.EventVars
         /// The total number of event listeners
         /// </summary>
         /// 
-        public virtual int TotalListeners => _untypedEvent.GetPersistentEventCount() + _runtimeListenerCount;
+        public virtual int TotalListeners => (_untypedEvent == null ? 0 : _untypedEvent.GetPersistentEventCount()) + _runtimeListenerCount;
         //public virtual Type OutputValueType => default;
 
 
@@ -116,11 +123,41 @@ namespace BardicBytes.EventVars
          */
         protected virtual void OnEnable()
         {
+            ResetRuntimeState();
+            Initialize();
+        }
+
+#if UNITY_EDITOR
+        /// <summary>
+        /// Builds load ScriptableObjects fresh each process start, so OnEnable is enough there.
+        /// In the editor with Domain Reload disabled, OnEnable does not re-run between play sessions;
+        /// this hook restores runtime state before scene Awake/OnEnable.
+        /// </summary>
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetEventAssetsForEditorPlayMode()
+        {
+            var assets = Resources.FindObjectsOfTypeAll<EventAsset>();
+            for (int i = 0; i < assets.Length; i++)
+            {
+                var asset = assets[i];
+                if (asset == null) continue;
+                if (asset is BaseEventVar eventVar && eventVar.IsClone) continue;
+                asset.ResetRuntimeState();
+            }
+        }
+#endif
+
+        /// <summary>
+        /// Restores the asset to its initial runtime state.
+        /// Persistent inspector listeners are kept. Runtime listeners are removed.
+        /// </summary>
+        public virtual void ResetRuntimeState()
+        {
             if (_untypedEvent != null) _untypedEvent.RemoveAllListeners();
 
+            _runtimeListenerCount = 0;
+            _lastRaiseTime = 0;
             _isInitialized = false;
-
-            Initialize();
         }
 
         protected virtual void Initialize()
@@ -143,24 +180,26 @@ namespace BardicBytes.EventVars
 
             try
             {
-                _untypedEvent.Invoke();
+                _untypedEvent?.Invoke();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Debug.LogError($"[f{Time.frameCount}] EventVar \"{name}\" Exception Thrown.");
-                throw ex;
+                throw;
             }
         }
 
         public virtual void AddListener(UnityAction action)
         {
             if (Debug.isDebugBuild) Debug.Assert(action != null);
+            if (_untypedEvent == null) _untypedEvent = new UnityEvent();
             _untypedEvent.AddListener(action);
             _runtimeListenerCount++;
         }
 
         public virtual void RemoveListener(UnityAction action)
         {
+            if (_untypedEvent == null) return;
             _untypedEvent.RemoveListener(action);
             _runtimeListenerCount--;
 

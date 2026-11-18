@@ -14,8 +14,8 @@ namespace BardicBytes.EventVars
 
         [Space]
 
-        [SerializeField] protected EventAsset untypedEventVar = default;
-        [SerializeField] protected UnityEvent untypedResponse = default;
+        [SerializeField, HideInInspector] protected EventAsset untypedEventVar = default;
+        [SerializeField, HideInInspector] protected UnityEvent untypedResponse = default;
 
         protected virtual void OnEnable() => untypedEventVar?.AddListener(HandleUntypedEventRaised);
 

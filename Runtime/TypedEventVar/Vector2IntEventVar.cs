@@ -5,8 +5,19 @@ using UnityEngine;
 namespace BardicBytes.EventVars
 {
     [CreateAssetMenu(menuName = "BardicBytes/EventVars/Vector2Int")]
-    public class Vector2IntEventVar : TypedEventVar<int>, IMinMax<Vector2Int>
+    public class Vector2IntEventVar : TypedEventVar<Vector2Int>, IMinMax<Vector2Int>
     {
+#if UNITY_EDITOR
+        public override string[] EditorProperties => new string[] {
+            StringUtility.GetBackingFieldName("InitialValue"),
+            StringUtility.GetBackingFieldName("HasMin"),
+            StringUtility.GetBackingFieldName("MinValue"),
+            StringUtility.GetBackingFieldName("HasMax"),
+            StringUtility.GetBackingFieldName("MaxValue"),
+            "_typedEvent",
+        };
+#endif
+
         [field: Header("MinMax")]
         [field: SerializeField]
         public bool HasMin { get; protected set; } = false;
@@ -21,19 +32,16 @@ namespace BardicBytes.EventVars
         public Vector2Int MinMaxClamp(Vector2Int val)
         {
             if (HasMax && HasMin)
-                return new Vector2Int(Mathf.Clamp(val.x, MinValue.x, MaxValue.y), Mathf.Clamp(val.y, MinValue.y, MaxValue.y));
+                return new Vector2Int(Mathf.Clamp(val.x, MinValue.x, MaxValue.x), Mathf.Clamp(val.y, MinValue.y, MaxValue.y));
             else if (HasMax)
-                return new Vector2Int(Mathf.Min(val.x, MaxValue.x), val.y);
+                return new Vector2Int(Mathf.Min(val.x, MaxValue.x), Mathf.Min(val.y, MaxValue.y));
             else if (HasMin)
-                return new Vector2Int(val.x, Mathf.Max(val.y, MinValue.y));
+                return new Vector2Int(Mathf.Max(val.x, MinValue.x), Mathf.Max(val.y, MinValue.y));
             else return val;
         }
 
-        public void Raise(Vector2Int data)
-        {
-            throw new System.NotImplementedException();
-        }
+        protected override Vector2Int ClampStoredValue(Vector2Int value) => MinMaxClamp(value);
 
-        public override int GetTypedValue(EventVarInstanceData bc) => bc.IntValue;
+        public override Vector2Int GetTypedValue(EventVarInstanceData bc) => bc.Vector2IntValue;
     }
 }

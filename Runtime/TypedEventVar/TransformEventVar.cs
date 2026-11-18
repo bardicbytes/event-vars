@@ -7,6 +7,6 @@ namespace BardicBytes.EventVars
     [CreateAssetMenu(menuName = "BardicBytes/EventVars/Transform")]
     public class TransformEventVar : TypedEventVar<Transform>
     {
-        public override Transform GetTypedValue(EventVarInstanceData bc) => (Transform)bc.UnityObjectValue;
+        public override Transform GetTypedValue(EventVarInstanceData bc) => bc.UnityObjectValue as Transform;
     }
 }
